@@ -1,76 +1,72 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿namespace SantasToolbox;
 
-namespace SantasToolbox
+public static class ListExtenstions
 {
-    public static class ListExtenstions
+    public static bool AddIfNotNull<T>(this List<T> list, T? element)
+        where T : class
     {
-        public static bool AddIfNotNull<T>(this List<T> list, T? element)
-            where T:class
+        if (element == null)
         {
-            if (element == null)
-            {
-                return false;
-            }
-
-            list.Add(element);
-            return true;
+            return false;
         }
 
-        public static IEnumerable<IList<T>> PermuteList<T>(this IList<T> sequence)
-        {
-            return Permute(sequence, 0, sequence.Count);
+        list.Add(element);
+        return true;
+    }
 
-            static IEnumerable<IList<T>> Permute(IList<T> sequence, int k, int m)
+    public static IEnumerable<IList<T>> PermuteList<T>(this IList<T> sequence)
+    {
+        return Permute(sequence, 0, sequence.Count);
+
+        static IEnumerable<IList<T>> Permute(IList<T> sequence, int k, int m)
+        {
+            if (k == m)
             {
-                if (k == m)
+                yield return sequence;
+            }
+            else
+            {
+                for (int i = k; i < m; i++)
                 {
-                    yield return sequence;
-                }
-                else
-                {
-                    for (int i = k; i < m; i++)
+                    SwapPlaces(sequence, k, i);
+
+                    foreach (var newSquence in Permute(sequence, k + 1, m))
                     {
-                        SwapPlaces(sequence, k, i);
-
-                        foreach (var newSquence in Permute(sequence, k + 1, m))
-                        {
-                            yield return newSquence;
-                        }
-
-                        SwapPlaces(sequence, k, i);
+                        yield return newSquence;
                     }
-                }
-            }
 
-            static void SwapPlaces(IList<T> sequence, int indexA, int indexB)
-            {
-                T temp = sequence[indexA];
-                sequence[indexA] = sequence[indexB];
-                sequence[indexB] = temp;
+                    SwapPlaces(sequence, k, i);
+                }
             }
         }
 
-        public static IEnumerable<IList<T>> GetAllOrdersOfList<T>(this IList<T> sequence)
+        static void SwapPlaces(IList<T> sequence, int indexA, int indexB)
         {
-            if (sequence.Count == 1) yield return sequence;
+            T temp = sequence[indexA];
+            sequence[indexA] = sequence[indexB];
+            sequence[indexB] = temp;
+        }
+    }
 
-            foreach (var element in sequence)
+    public static IEnumerable<IList<T>> GetAllOrdersOfList<T>(this IList<T> sequence)
+    {
+        if (sequence.Count == 1) yield return sequence;
+
+        foreach (var element in sequence)
+        {
+            var list = new List<T>();
+            var listWithoutElement = sequence.ToList();
+            listWithoutElement.Remove(element);
+            list.Add(element);
+
+            foreach (var subsequence in listWithoutElement.GetAllOrdersOfList())
             {
-                var list = new List<T>();
-                var listWithoutElement = sequence.ToList();
-                listWithoutElement.Remove(element);
-                list.Add(element);
+                var copyList = list.ToList();
 
-                foreach (var subsequence in listWithoutElement.GetAllOrdersOfList())
-                {
-                    var copyList = list.ToList();
-
-                    copyList.AddRange(subsequence);
-                    yield return copyList;
-                }
-
+                copyList.AddRange(subsequence);
+                yield return copyList;
             }
+
         }
     }
 }

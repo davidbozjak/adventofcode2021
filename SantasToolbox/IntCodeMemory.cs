@@ -1,45 +1,41 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿namespace SantasToolbox;
 
-namespace SantasToolbox
+public interface IIntReadOnlyCodeMemory
 {
-    public interface IIntReadOnlyCodeMemory
+    IIntReadOnlyCodeMemory Clone();
+
+    IIntCodeMemory CloneWriteable();
+
+    long this[long index] { get; }
+
+    int Length { get; }
+}
+
+public interface IIntCodeMemory : IIntReadOnlyCodeMemory
+{
+    new long this[long index] { get; set; }
+}
+
+public class IntCodeMemory : IIntCodeMemory
+{
+    private readonly long[] memory;
+
+    public IntCodeMemory(IEnumerable<long> inputProvider)
     {
-        IIntReadOnlyCodeMemory Clone();
-
-        IIntCodeMemory CloneWriteable();
-
-        long this[long index] { get; }
-
-        int Length { get; }
+        this.memory = new long[100000];
+        inputProvider.ToArray().CopyTo(this.memory, 0);
     }
 
-    public interface IIntCodeMemory : IIntReadOnlyCodeMemory
+    public long this[long index]
     {
-        new long this[long index] { get; set; }
+        get => this.memory[index];
+        set => this.memory[index] = value;
     }
 
-    public class IntCodeMemory : IIntCodeMemory
-    {
-        private readonly long[] memory;
+    public int Length => this.memory.Length;
 
-        public IntCodeMemory(IEnumerable<long> inputProvider)
-        {
-            this.memory = new long[100000];
-            inputProvider.ToArray().CopyTo(this.memory, 0);
-        }
+    public IIntReadOnlyCodeMemory Clone() => new IntCodeMemory(this.memory);
 
-        public long this[long index] 
-        { 
-            get => this.memory[index];
-            set => this.memory[index] = value; 
-        }
+    public IIntCodeMemory CloneWriteable() => new IntCodeMemory(this.memory);
 
-        public int Length => this.memory.Length;
-
-        public IIntReadOnlyCodeMemory Clone() => new IntCodeMemory(this.memory);
-
-        public IIntCodeMemory CloneWriteable() => new IntCodeMemory(this.memory);
-
-    }
 }

@@ -1,38 +1,34 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿namespace SantasToolbox;
 
-namespace SantasToolbox
+public class EnumerableReader<T>
 {
-    public class EnumerableReader<T>
+    private readonly T[] dataSource;
+    private IEnumerable<T> workingStream;
+
+    public EnumerableReader(T[] dataSource)
     {
-        private readonly T[] dataSource;
-        private IEnumerable<T> workingStream;
+        this.dataSource = dataSource;
+        this.workingStream = this.ResetEx();
+    }
 
-        public EnumerableReader(T[] dataSource)
-        {
-            this.dataSource = dataSource;
-            this.workingStream = this.ResetEx();
-        }
+    public T TakeFirst()
+    {
+        var first = workingStream.FirstOrDefault();
+        workingStream = workingStream.Skip(1);
+        return first;
+    }
 
-        public T TakeFirst()
-        {
-            var first = workingStream.FirstOrDefault();
-            workingStream = workingStream.Skip(1);
-            return first;
-        }
+    public IEnumerable<T> TakeN(int n)
+    {
+        var range = workingStream.Take(n);
+        workingStream = workingStream.Skip(n);
+        return range;
+    }
 
-        public IEnumerable<T> TakeN(int n)
-        {
-            var range = workingStream.Take(n);
-            workingStream = workingStream.Skip(n);
-            return range;
-        }
+    public void Reset() => this.ResetEx();
 
-        public void Reset() => this.ResetEx();
-
-        private IEnumerable<T> ResetEx()
-        {
-            return this.workingStream = this.dataSource;
-        }
+    private IEnumerable<T> ResetEx()
+    {
+        return this.workingStream = this.dataSource;
     }
 }
