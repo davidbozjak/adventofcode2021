@@ -11,10 +11,9 @@ public class SingleLineStringInputParserTests
     {
         // Arrange
         var parser = new SingleLineStringInputParser<int>(int.TryParse);
-        int value;
 
         // Act, Assert
-        Assert.IsFalse(parser.GetValue(null, out value));
+        Assert.IsFalse(parser.GetValue(null, out int value));
     }
 
     [TestMethod]
@@ -22,10 +21,9 @@ public class SingleLineStringInputParserTests
     {
         // Arrange
         var parser = new SingleLineStringInputParser<int>(int.TryParse);
-        int value;
 
         // Act, Assert
-        Assert.IsFalse(parser.GetValue(string.Empty, out value));
+        Assert.IsFalse(parser.GetValue(string.Empty, out int value));
     }
 
     [TestMethod]
@@ -33,10 +31,9 @@ public class SingleLineStringInputParserTests
     {
         // Arrange
         var parser = new SingleLineStringInputParser<int>(int.TryParse);
-        int value;
 
         // Act, Assert
-        Assert.IsFalse(parser.GetValue("abc", out value));
+        Assert.IsFalse(parser.GetValue("abc", out int value));
     }
 
     [TestMethod]
@@ -44,10 +41,9 @@ public class SingleLineStringInputParserTests
     {
         // Arrange
         var parser = new SingleLineStringInputParser<int>(int.TryParse);
-        int value;
 
         // Act, Assert
-        Assert.IsTrue(parser.GetValue("1", out value));
+        Assert.IsTrue(parser.GetValue("1", out int value));
         Assert.AreEqual(value, 1);
     }
 
@@ -56,10 +52,9 @@ public class SingleLineStringInputParserTests
     {
         // Arrange
         var parser = new SingleLineStringInputParser<int>(int.TryParse);
-        int value;
 
         // Act, Assert
-        Assert.IsTrue(parser.GetValue(" 1 ", out value));
+        Assert.IsTrue(parser.GetValue(" 1 ", out int value));
         Assert.AreEqual(value, 1);
     }
 
@@ -68,11 +63,10 @@ public class SingleLineStringInputParserTests
     {
         // Arrange
         var parser = new SingleLineStringInputParser<int>(int.TryParse);
-        int value;
 
         // Act, Assert
 
-        Assert.IsTrue(parser.GetValue("1,", out value));
+        Assert.IsTrue(parser.GetValue("1,", out int value));
         Assert.AreEqual(value, 1);
     }
 
@@ -81,11 +75,10 @@ public class SingleLineStringInputParserTests
     {
         // Arrange
         var parser = new SingleLineStringInputParser<int>(int.TryParse);
-        int value;
 
         // Act, Assert
 
-        Assert.IsTrue(parser.GetValue(" 1, ", out value));
+        Assert.IsTrue(parser.GetValue(" 1, ", out int value));
         Assert.AreEqual(value, 1);
     }
 
@@ -94,11 +87,10 @@ public class SingleLineStringInputParserTests
     {
         // Arrange
         var parser = new SingleLineStringInputParser<int>(int.TryParse);
-        int value;
 
         // Act, Assert
-        Assert.IsTrue(parser.GetValue("1", out value));
-        Assert.IsFalse(parser.GetValue(null, out value));
+        Assert.IsTrue(parser.GetValue("1", out int value1));
+        Assert.IsFalse(parser.GetValue(null, out int value2));
     }
 
     [TestMethod]
@@ -106,19 +98,18 @@ public class SingleLineStringInputParserTests
     {
         // Arrange
         var parser = new SingleLineStringInputParser<int>(int.TryParse);
-        int value;
 
         // Act, Assert
-        parser.GetValue("1, 2, 3", out value);
-        Assert.AreEqual(value, 1);
+        parser.GetValue("1, 2, 3", out int value1);
+        Assert.AreEqual(value1, 1);
 
-        parser.GetValue(null, out value);
-        Assert.AreEqual(value, 2);
+        parser.GetValue(null, out int value2);
+        Assert.AreEqual(value2, 2);
 
-        parser.GetValue(null, out value);
-        Assert.AreEqual(value, 3);
+        parser.GetValue(null, out int value3);
+        Assert.AreEqual(value3, 3);
 
-        Assert.IsFalse(parser.GetValue(null, out value));
+        Assert.IsFalse(parser.GetValue(null, out int value4));
     }
 
     [TestMethod]
@@ -126,16 +117,15 @@ public class SingleLineStringInputParserTests
     {
         // Arrange
         var parser = new SingleLineStringInputParser<int>(int.TryParse);
-        int value;
 
         // Act, Assert
-        parser.GetValue("1", out value);
-        Assert.AreEqual(value, 1);
+        parser.GetValue("1", out int value1);
+        Assert.AreEqual(value1, 1);
 
-        parser.GetValue("2", out value);
-        Assert.AreEqual(value, 2);
+        parser.GetValue("2", out int value2);
+        Assert.AreEqual(value2, 2);
 
-        Assert.IsFalse(parser.GetValue(null, out value));
+        Assert.IsFalse(parser.GetValue(null, out int value3));
     }
 
     [TestMethod]
@@ -143,16 +133,15 @@ public class SingleLineStringInputParserTests
     {
         // Arrange
         var parser = new SingleLineStringInputParser<int>(int.TryParse);
-        int value;
 
         // Act, Assert
-        parser.GetValue("1,", out value);
-        Assert.AreEqual(value, 1);
+        parser.GetValue("1,", out int value1);
+        Assert.AreEqual(value1, 1);
 
-        parser.GetValue("2, ", out value);
-        Assert.AreEqual(value, 2);
+        parser.GetValue("2, ", out int value2);
+        Assert.AreEqual(value2, 2);
 
-        Assert.IsFalse(parser.GetValue(null, out value));
+        Assert.IsFalse(parser.GetValue(null, out int value3));
     }
 
     [TestMethod]
@@ -160,18 +149,17 @@ public class SingleLineStringInputParserTests
     {
         // Arrange
         var parser = new SingleLineStringInputParser<int>(int.TryParse);
-        int value;
 
         // Act, Assert
-        parser.GetValue("1,2", out value);
-        Assert.AreEqual(value, 1);
+        parser.GetValue("1,2", out int value1);
+        Assert.AreEqual(value1, 1);
 
-        parser.GetValue("3, ", out value);
-        Assert.AreEqual(value, 2);
+        parser.GetValue("3, ", out int value2);
+        Assert.AreEqual(value2, 2);
 
-        Assert.IsTrue(parser.GetValue(null, out value));
-        Assert.AreEqual(value, 3);
+        Assert.IsTrue(parser.GetValue(null, out int value3));
+        Assert.AreEqual(value3, 3);
 
-        Assert.IsFalse(parser.GetValue(null, out value));
+        Assert.IsFalse(parser.GetValue(null, out int value4));
     }
 }

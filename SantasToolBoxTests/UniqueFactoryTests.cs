@@ -11,7 +11,7 @@ public class UniqueFactoryTests
     {
         // Arrange
         bool hasCalledConstructingFunc = false;
-        Func<string, int> constructingFunc = _ => { hasCalledConstructingFunc = true; return 1; };
+        int constructingFunc(string _) { hasCalledConstructingFunc = true; return 1; }
         var factory = new UniqueFactory<string, int>(constructingFunc);
 
         // Act
@@ -26,7 +26,7 @@ public class UniqueFactoryTests
     {
         // Arrange
         int constructingFuncCount = 0;
-        Func<string, object> constructingFunc = _ => { constructingFuncCount++; return new object(); };
+        object constructingFunc(string _) { constructingFuncCount++; return new object(); }
         var factory = new UniqueFactory<string, object>(constructingFunc);
 
         // Act
@@ -43,7 +43,7 @@ public class UniqueFactoryTests
     public void SameObjectIsReturnedForSameId()
     {
         // Arrange
-        Func<string, object> constructingFunc = _ => new object();
+        static object constructingFunc(string _) => new();
         var factory = new UniqueFactory<string, object>(constructingFunc);
 
         // Act
@@ -58,7 +58,7 @@ public class UniqueFactoryTests
     public void DifferetObjectIsReturnedForDifferentId()
     {
         // Arrange
-        Func<string, object> constructingFunc = _ => new object();
+        static object constructingFunc(string _) => new();
         var factory = new UniqueFactory<string, object>(constructingFunc);
 
         // Act
@@ -73,7 +73,7 @@ public class UniqueFactoryTests
     public void CreatedInstanceExistsInAllCreatedInstances()
     {
         // Arrange
-        Func<string, object> constructingFunc = _ => new object();
+        static object constructingFunc(string _) => new();
         var factory = new UniqueFactory<string, object>(constructingFunc);
 
         // Act
@@ -89,7 +89,7 @@ public class UniqueFactoryTests
     public void AllCreatedInstancesDoesNotStoreDuplicateObjects()
     {
         // Arrange
-        Func<string, object> constructingFunc = _ => new object();
+        static object constructingFunc(string _) => new();
         var factory = new UniqueFactory<string, object>(constructingFunc);
 
         // Act

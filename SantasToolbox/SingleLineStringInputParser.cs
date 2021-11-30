@@ -8,7 +8,7 @@ public class SingleLineStringInputParser<T>
     public delegate bool StringToTConverter(string? input, out T result);
     public delegate string[] StringSplitter(string? input);
 
-    private readonly Queue<T> parserInputs = new Queue<T>();
+    private readonly Queue<T> parserInputs = new();
     private readonly StringToTConverter converter;
     private readonly StringSplitter? splitter;
 
@@ -25,7 +25,7 @@ public class SingleLineStringInputParser<T>
 
     public bool GetValue(string? input, out T value)
     {
-        value = default(T);
+        value = default;
 
         if (string.IsNullOrWhiteSpace(input))
         {
@@ -47,7 +47,7 @@ public class SingleLineStringInputParser<T>
 
             var itemsToAdd = split
                 .Where(w => this.converter(w, out _) == true)
-                .Select(w => { T value; this.converter(w, out value); return value; })
+                .Select(w => { this.converter(w, out T value); return value; })
                 .ToList();
 
             itemsToAdd.ForEach(w => this.parserInputs.Enqueue(w));

@@ -4,7 +4,7 @@ public class UniqueFactory<T, U>
     where T : notnull
     where U : notnull
 {
-    private readonly Dictionary<T, U> allCreatedInstances = new Dictionary<T, U>();
+    private readonly Dictionary<T, U> allCreatedInstances = new();
     private readonly Func<T, U> constructingFunc;
 
     public UniqueFactory(Func<T, U> constructingFunc)
