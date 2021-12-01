@@ -69,4 +69,23 @@ public static class ListExtenstions
 
         }
     }
+    /// <summary>
+    /// Returns a sliding window sum for a sublist *ending* with element on index poz.
+    /// </summary>
+    /// <param name="input">The list to perform the operation on</param>
+    /// <param name="lastIndexOfWindow">The index of the last element to be included</param>
+    /// <param name="windowLength">The width of the window</param>
+    /// <returns></returns>
+    public static int GetSlidingWindowSum(this IList<int> input, int lastIndexOfWindow, int windowLength)
+    {
+        int skip = lastIndexOfWindow - windowLength + 1;
+        if (skip < 0)
+        {
+            windowLength = windowLength + skip;
+            skip = 0;
+        }
+
+        return input.Skip(skip).Take(windowLength).Sum();
+    }
+        
 }

@@ -18,7 +18,7 @@ prevValue = int.MaxValue;
 
 for (int i = 2; i < input.Count; i++)
 {
-    int slidingWindowValue = GetSlidingWindowSum(input, i, 3);
+    int slidingWindowValue = input.GetSlidingWindowSum(i, 3);
     if (slidingWindowValue > prevValue)
     {
         numInc++;
@@ -27,6 +27,3 @@ for (int i = 2; i < input.Count; i++)
 }
 
 Console.WriteLine($"Part 2: {numInc}");
-
-static int GetSlidingWindowSum(IList<int> input, int poz, int windowLength) =>
-    input.Skip(poz - windowLength + 1).Take(windowLength).Sum();
