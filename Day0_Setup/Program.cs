@@ -6,7 +6,7 @@ var input = new InputProvider<int>("Input.txt", parser.GetValue).ToList();
 Console.WriteLine($"Part 1: {SumIfEqual(input)}");
 Console.WriteLine($"Part 2: {SumIfEqual(input, input.Count / 2)}");
 
-int SumIfEqual(IList<int> input, int offset = 1)
+static int SumIfEqual(IList<int> input, int offset = 1)
 {
     int sum = 0;
 
