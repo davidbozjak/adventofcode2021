@@ -28,12 +28,5 @@ for (int i = 2; i < input.Count; i++)
 
 Console.WriteLine($"Part 2: {numInc}");
 
-int GetSlidingWindowSum(IList<int> input, int poz, int windowLength)
-{
-    int slidingWindow = input[poz - windowLength + 1];
-    for (int i = poz - windowLength + 2; i < (poz + windowLength - 2) && i < input.Count; i++)
-    {
-        slidingWindow += input[i];
-    }
-    return slidingWindow;
-}
+static int GetSlidingWindowSum(IList<int> input, int poz, int windowLength) =>
+    input.Skip(poz - windowLength + 1).Take(windowLength).Sum();

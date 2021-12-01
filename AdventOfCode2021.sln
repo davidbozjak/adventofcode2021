@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SantasToolbox", "SantasTool
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SantasToolBoxTests", "SantasToolBoxTests\SantasToolBoxTests.csproj", "{29B87691-90DB-41C8-9D19-4B8EE5D9741C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day1_TBN", "Day1_TBN\Day1_TBN.csproj", "{EC84A2FB-F31E-4855-BDBD-8A11D52E0B64}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day1_Depths", "Day1_Depths\Day1_Depths.csproj", "{EC84A2FB-F31E-4855-BDBD-8A11D52E0B64}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day2_TBN", "Day2_TBN\Day2_TBN.csproj", "{8A294F81-0A99-47A9-8184-1F18E366BAE1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{EC84A2FB-F31E-4855-BDBD-8A11D52E0B64}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC84A2FB-F31E-4855-BDBD-8A11D52E0B64}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC84A2FB-F31E-4855-BDBD-8A11D52E0B64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A294F81-0A99-47A9-8184-1F18E366BAE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A294F81-0A99-47A9-8184-1F18E366BAE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A294F81-0A99-47A9-8184-1F18E366BAE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A294F81-0A99-47A9-8184-1F18E366BAE1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
