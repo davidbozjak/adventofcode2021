@@ -69,14 +69,15 @@ public static class ListExtenstions
 
         }
     }
+
     /// <summary>
-    /// Returns a sliding window sum for a sublist *ending* with element on index poz.
+    /// Returns a sliding window elements *ending* with element on index lastIndexOfWindow.
     /// </summary>
     /// <param name="input">The list to perform the operation on</param>
     /// <param name="lastIndexOfWindow">The index of the last element to be included</param>
     /// <param name="windowLength">The width of the window</param>
-    /// <returns></returns>
-    public static int GetSlidingWindowSum(this IList<int> input, int lastIndexOfWindow, int windowLength)
+    /// <returns>A new sublist containing the elements from the original list</returns>
+    public static IList<T> GetSlidingWindow<T>(this IList<T> input, int lastIndexOfWindow, int windowLength)
     {
         int skip = lastIndexOfWindow - windowLength + 1;
         if (skip < 0)
@@ -85,7 +86,19 @@ public static class ListExtenstions
             skip = 0;
         }
 
-        return input.Skip(skip).Take(windowLength).Sum();
+        return input.Skip(skip).Take(windowLength).ToList();
     }
-        
+
+    /// <summary>
+    /// Returns a sliding window sum for a sublist *ending* with element on index poz.
+    /// </summary>
+    /// <param name="input">The list to perform the operation on</param>
+    /// <param name="lastIndexOfWindow">The index of the last element to be included</param>
+    /// <param name="windowLength">The width of the window</param>
+    /// <returns>A sum of the elements</returns>
+    public static long GetSlidingWindowSum<T>(this IList<T> input, int lastIndexOfWindow, int windowLength)
+    {
+        return input.GetSlidingWindow(lastIndexOfWindow, windowLength)
+            .Sum(w => Convert.ToInt64(w));
+    }   
 }
