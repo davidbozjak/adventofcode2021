@@ -1,6 +1,8 @@
-﻿var input = new InputProvider<Instruction?>("Input.txt", Parse).ToList();
+﻿using Day2_Navigating;
 
-var instructions = input.Where(w => w != null).ToList();
+var input = new InputProvider<Instruction?>("Input.txt", Parse).ToList();
+
+var instructions = input.Where(w => w != null).Cast<Instruction>().ToList();
 
 int depth = 0;
 int x = 0;
@@ -9,13 +11,13 @@ foreach (var instruction in instructions)
 {
     switch (instruction.Direction)
     {
-        case Instruction.Directions.Down:
+        case Directions.Down:
             depth += instruction.Steps;
             break;
-        case Instruction.Directions.Up:
+        case Directions.Up:
             depth -= instruction.Steps;
             break;
-        case Instruction.Directions.Forward:
+        case Directions.Forward:
             x += instruction.Steps;
             break;
         default: throw new Exception();
@@ -32,13 +34,13 @@ foreach (var instruction in instructions)
 {
     switch (instruction.Direction)
     {
-        case Instruction.Directions.Down:
+        case Directions.Down:
             aim += instruction.Steps;
             break;
-        case Instruction.Directions.Up:
+        case Directions.Up:
             aim -= instruction.Steps;
             break;
-        case Instruction.Directions.Forward:
+        case Directions.Forward:
             x += instruction.Steps;
             depth += aim * instruction.Steps;
             break;
@@ -54,23 +56,18 @@ static bool Parse(string? input, out Instruction? value)
 
     if (!string.IsNullOrWhiteSpace(input))
     {
-        value = new Instruction();
+        value = new Instruction
+        {
+            Direction = input[..input.IndexOf(" ")] switch
+            {
+                "forward" => Directions.Forward,
+                "up" => Directions.Up,
+                "down" => Directions.Down,
+                _ => throw new Exception()
+            },
 
-        if (input.StartsWith("forward"))
-        {
-            value.Direction = Instruction.Directions.Forward;
-        }
-        else if (input.StartsWith("up"))
-        {
-            value.Direction = Instruction.Directions.Up;
-        }
-        else if (input.StartsWith("down"))
-        {
-            value.Direction = Instruction.Directions.Down;
-        }
-        else throw new Exception();
-
-        value.Steps = int.Parse(input.Substring(input.LastIndexOf(" ") + 1));
+            Steps = int.Parse(input[input.LastIndexOf(" ")..])
+        };
 
         return true;
     }
@@ -78,13 +75,4 @@ static bool Parse(string? input, out Instruction? value)
     {
         return false;
     }
-}
-
-class Instruction
-{
-    public enum Directions { Forward, Down, Up }
-    
-    public Directions Direction { get; set; }
-
-    public int Steps { get; set; }
 }
