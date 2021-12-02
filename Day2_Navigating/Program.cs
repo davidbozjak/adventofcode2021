@@ -1,6 +1,4 @@
-﻿using Day2_Navigating;
-
-var input = new InputProvider<Instruction?>("Input.txt", Parse).ToList();
+﻿var input = new InputProvider<Instruction?>("Input.txt", Parse).ToList();
 
 var instructions = input.Where(w => w != null).Cast<Instruction>().ToList();
 
@@ -56,18 +54,15 @@ static bool Parse(string? input, out Instruction? value)
 
     if (!string.IsNullOrWhiteSpace(input))
     {
-        value = new Instruction
-        {
-            Direction = input[..input.IndexOf(" ")] switch
+        value = new(
+            input[..input.IndexOf(" ")] switch
             {
                 "forward" => Directions.Forward,
                 "up" => Directions.Up,
                 "down" => Directions.Down,
                 _ => throw new Exception()
             },
-
-            Steps = int.Parse(input[input.LastIndexOf(" ")..])
-        };
+            int.Parse(input[input.LastIndexOf(" ")..]));
 
         return true;
     }
@@ -76,3 +71,6 @@ static bool Parse(string? input, out Instruction? value)
         return false;
     }
 }
+
+enum Directions { Forward, Down, Up }
+record Instruction(Directions Direction, int Steps);
