@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SantasToolBoxTests", "Santa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day1_Depths", "Day1_Depths\Day1_Depths.csproj", "{EC84A2FB-F31E-4855-BDBD-8A11D52E0B64}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day2_TBN", "Day2_TBN\Day2_TBN.csproj", "{8A294F81-0A99-47A9-8184-1F18E366BAE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day2_Navigating", "Day2_Navigating\Day2_Navigating.csproj", "{8A294F81-0A99-47A9-8184-1F18E366BAE1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

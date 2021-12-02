@@ -18,7 +18,7 @@ prevValue = int.MaxValue;
 
 for (int i = 2; i < input.Count; i++)
 {
-    int slidingWindowValue = input.GetSlidingWindowSum(i, 3);
+    int slidingWindowValue = (int)input.GetSlidingWindowSum(i, 3);
     if (slidingWindowValue > prevValue)
     {
         numInc++;
