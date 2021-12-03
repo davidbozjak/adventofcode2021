@@ -3,10 +3,6 @@
 var length = input[0].Length;
 
 var gammaBinary = new int[length];
-var epsilonBinary = new int[length];
-
-var oxygenNumbersToEliminate = input.ToList();
-var co2NumbersToEliminate = input.ToList();
 
 for (int i = 0; i < length; i++)
 {
@@ -19,61 +15,61 @@ for (int i = 0; i < length; i++)
         else noOf1++;
     }
 
-    if (noOf0 > noOf1)
-    {
-        gammaBinary[i] = 0;
-        epsilonBinary[i] = 1;
-    }
-    else
-    {
-        gammaBinary[i] = 1;
-        epsilonBinary[i] = 0;
-    }
-}
-
-for (int i = 0; i < length && oxygenNumbersToEliminate.Count > 1; i++)
-{
-    int noOf0 = 0;
-    int noOf1 = 0;
-
-    foreach (var line in oxygenNumbersToEliminate)
-    {
-        if (line[i] == '0') noOf0++;
-        else noOf1++;
-    }
-
-    var mostCommon = noOf0 > noOf1 ? 0 : 1;
-
-    oxygenNumbersToEliminate =
-            oxygenNumbersToEliminate.Where(w => w[i] == mostCommon.ToString()[0])
-            .ToList();
-}
-
-for (int i = 0; i < length && co2NumbersToEliminate.Count > 1; i++)
-{
-    int noOf0 = 0;
-    int noOf1 = 0;
-
-    foreach (var line in co2NumbersToEliminate)
-    {
-        if (line[i] == '0') noOf0++;
-        else noOf1++;
-    }
-
-    var leastCommon = noOf0 > noOf1 ? 1 : 0;
-
-    co2NumbersToEliminate =
-            co2NumbersToEliminate.Where(w => w[i] == leastCommon.ToString()[0])
-            .ToList();
+    gammaBinary[i] = noOf0 > noOf1 ? 0 : 1;
 }
 
 int gamma = GetIntFromBoolArray(gammaBinary);
-int epsilon = GetIntFromBoolArray(epsilonBinary);
-int oxygen = GetIntFromBoolArray(oxygenNumbersToEliminate[0].ToCharArray().Select(w => int.Parse(w.ToString())).ToArray());
-int co2 = GetIntFromBoolArray(co2NumbersToEliminate[0].ToCharArray().Select(w => int.Parse(w.ToString())).ToArray());
+int epsilon = GetIntFromBoolArray(InvertBoolArray(gammaBinary));
 
 Console.WriteLine($"Part 1: {gamma * epsilon}");
+
+var oxygenNumbersToEliminate = input.ToList();
+var co2NumbersToEliminate = input.ToList();
+
+var oxygenBinary = PruneListByBitwiseSelection(oxygenNumbersToEliminate, (noOf0, noOf1) => noOf0 > noOf1 ? 0 : 1);
+int oxygen = GetIntFromBoolArray(oxygenBinary);
+
+var co2Binary = PruneListByBitwiseSelection(oxygenNumbersToEliminate, (noOf0, noOf1) => noOf0 > noOf1 ? 1 : 0);
+var co2 = GetIntFromBoolArray(co2Binary);
+
 Console.WriteLine($"Part 2: {oxygen * co2}");
+
+int[] PruneListByBitwiseSelection(IList<string> list, Func<int, int, int> criteriaSelector)
+{
+    for (int i = 0; i < length && list.Count > 1; i++)
+    {
+        int noOf0 = 0;
+        int noOf1 = 0;
+
+        foreach (var line in list)
+        {
+            if (line[i] == '0') noOf0++;
+            else noOf1++;
+        }
+
+        var valueToMatch = criteriaSelector(noOf0, noOf1) == 1 ? '1' : '0';
+
+        list =
+                list.Where(w => w[i] == valueToMatch)
+                .ToList();
+    }
+
+    if (list.Count != 1) throw new Exception();
+
+    return list[0].ToCharArray().Select(w => int.Parse(w.ToString())).ToArray();
+}
+
+int[] InvertBoolArray(int[] input)
+{
+    var result = new int[input.Length];
+
+    for (int i = 0; i < input.Length; i++)
+    {
+        result[i] = input[i] == 1 ? 0 : 1;
+    }
+
+    return result;
+}
 
 int GetIntFromBoolArray(int[] input)
 {
