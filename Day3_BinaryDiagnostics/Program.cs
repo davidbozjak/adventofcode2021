@@ -6,14 +6,7 @@ var gammaBinary = new int[length];
 
 for (int i = 0; i < length; i++)
 {
-    int noOf0 = 0;
-    int noOf1 = 0;
-
-    foreach (var line in input)
-    {
-        if (line[i] == '0') noOf0++;
-        else noOf1++;
-    }
+    (int noOf0, int noOf1) = CountBitValuesInArrayAtIndex(i, input);
 
     gammaBinary[i] = noOf0 > noOf1 ? 0 : 1;
 }
@@ -38,25 +31,25 @@ int[] PruneListByBitwiseSelection(IList<string> list, Func<int, int, int> criter
 {
     for (int i = 0; i < length && list.Count > 1; i++)
     {
-        int noOf0 = 0;
-        int noOf1 = 0;
-
-        foreach (var line in list)
-        {
-            if (line[i] == '0') noOf0++;
-            else noOf1++;
-        }
+        (int noOf0, int noOf1) = CountBitValuesInArrayAtIndex(i, list);
 
         var valueToMatch = criteriaSelector(noOf0, noOf1) == 1 ? '1' : '0';
 
-        list =
-                list.Where(w => w[i] == valueToMatch)
+        list = list.Where(w => w[i] == valueToMatch)
                 .ToList();
     }
 
     if (list.Count != 1) throw new Exception();
 
     return list[0].ToCharArray().Select(w => int.Parse(w.ToString())).ToArray();
+}
+
+(int noOf0, int noOf1) CountBitValuesInArrayAtIndex(int index, IList<string> list)
+{
+    int noOf1 = list.Select(w => w[index] == '1' ? 1 : 0).Sum();
+    int noOf0 = list.Count - noOf1;
+
+    return (noOf0, noOf1);
 }
 
 int[] InvertBoolArray(int[] input)
@@ -74,10 +67,12 @@ int[] InvertBoolArray(int[] input)
 int GetIntFromBoolArray(int[] input)
 {
     int result = 0;
+
     for (int i = input.Length - 1, pow = 0; i >= 0; i--, pow++)
     {
         result += input[i] * (int)Math.Pow(2, pow);
     }
+
     return result;
 }
 
