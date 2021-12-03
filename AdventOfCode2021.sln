@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day1_Depths", "Day1_Depths\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day2_Navigating", "Day2_Navigating\Day2_Navigating.csproj", "{8A294F81-0A99-47A9-8184-1F18E366BAE1}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day3_BinaryDiagnostics", "Day3_BinaryDiagnostics\Day3_BinaryDiagnostics.csproj", "{F24C7626-A848-4C3B-BF2A-32180DC876C0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{8A294F81-0A99-47A9-8184-1F18E366BAE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A294F81-0A99-47A9-8184-1F18E366BAE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A294F81-0A99-47A9-8184-1F18E366BAE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F24C7626-A848-4C3B-BF2A-32180DC876C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F24C7626-A848-4C3B-BF2A-32180DC876C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F24C7626-A848-4C3B-BF2A-32180DC876C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F24C7626-A848-4C3B-BF2A-32180DC876C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
