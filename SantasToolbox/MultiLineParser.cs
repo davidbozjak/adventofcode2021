@@ -14,6 +14,31 @@ public class MultiLineParser<T>
         this.additionFunc = additionFunc;
     }
 
+    public IList<T> AddRange(IList<string?> input)
+    {
+        var list = new List<T>();
+
+        foreach (var item in input)
+        {
+            if (AddLine(item, out T? value))
+            {
+                if (value != null && !list.Contains(value))
+                {
+                    list.Add(value);
+                }
+            }
+            else break;
+        }
+
+        return list;
+    }
+
+    /// <summary>
+    /// Adds line and assigns a object to out param value if the group is complete
+    /// </summary>
+    /// <param name="input">The input to add</param>
+    /// <param name="value">Returned value if group is complete</param>
+    /// <returns>A boolean value indicating if iteration over input should continue</returns>
     public bool AddLine(string? input, out T? value)
     {
         value = null;
@@ -42,6 +67,7 @@ public class MultiLineParser<T>
         if (currentGroup == null)
         {
             currentGroup = this.constructorFunc();
+            value = currentGroup;
         }
 
         this.additionFunc(this.currentGroup, input);
