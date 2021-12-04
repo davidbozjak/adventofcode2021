@@ -6,7 +6,7 @@ var numbersCalled = numbersInput[0].Split(",", StringSplitOptions.RemoveEmptyEnt
 var boardsInputParser = new InputProvider<string?>("Boards.txt", GetString) { EndAtEmptyLine = false };
 var boardsInput = boardsInputParser.ToList();
 var boardsParser = new MultiLineParser<BingoBoard>(() => new BingoBoard(), (board, value) => board.AddRow(value));
-var boards = boardsParser.AddRange(boardsInput);
+var boards = boardsParser.AddRange(boardsInput.GetEnumerator());
 
 Console.WriteLine($"Number of boards parsed: {boards.Count}");
 
