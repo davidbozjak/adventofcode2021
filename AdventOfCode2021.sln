@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day5_VentMap", "Day5_VentMa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day_Template", "Day_Template\Day_Template.csproj", "{72632C82-FEFC-49E4-8950-8950B84CEEB7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day6_TBN", "Day6_TBN\Day6_TBN.csproj", "{70505B8F-B089-4423-9E60-3D5B45E9EA88}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day6_FishGrowth", "Day6_FishGrowth\Day6_FishGrowth.csproj", "{70505B8F-B089-4423-9E60-3D5B45E9EA88}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
