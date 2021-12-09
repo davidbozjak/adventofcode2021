@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day7_AligningCrabs", "Day7_
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day8_TBN", "Day8_TBN\Day8_TBN.csproj", "{9773D346-8472-41B0-831E-0915288D553C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day9_TBN", "Day9_TBN\Day9_TBN.csproj", "{4C232872-C452-4BFA-AC54-623F83307264}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,10 @@ Global
 		{9773D346-8472-41B0-831E-0915288D553C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9773D346-8472-41B0-831E-0915288D553C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9773D346-8472-41B0-831E-0915288D553C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C232872-C452-4BFA-AC54-623F83307264}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C232872-C452-4BFA-AC54-623F83307264}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C232872-C452-4BFA-AC54-623F83307264}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C232872-C452-4BFA-AC54-623F83307264}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
