@@ -25,11 +25,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day6_FishGrowth", "Day6_Fis
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day7_AligningCrabs", "Day7_AligningCrabs\Day7_AligningCrabs.csproj", "{A3B2516B-8ADC-4434-9A3D-FDB388C09839}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day8_TBN", "Day8_TBN\Day8_TBN.csproj", "{9773D346-8472-41B0-831E-0915288D553C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day8_Wiring", "Day8_Wiring\Day8_Wiring.csproj", "{9773D346-8472-41B0-831E-0915288D553C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day9_TBN", "Day9_TBN\Day9_TBN.csproj", "{4C232872-C452-4BFA-AC54-623F83307264}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day9_BasinMapping", "Day9_BasinMapping\Day9_BasinMapping.csproj", "{4C232872-C452-4BFA-AC54-623F83307264}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day10_TBN", "Day10_TBN\Day10_TBN.csproj", "{0A7B6796-0918-49C2-AC1C-68E61E4EA9C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day10_Parenthesis", "Day10_Parenthesis\Day10_Parenthesis.csproj", "{0A7B6796-0918-49C2-AC1C-68E61E4EA9C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
