@@ -33,6 +33,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day10_Parenthesis", "Day10_
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day11_FlashingOctopi", "Day11_FlashingOctopi\Day11_FlashingOctopi.csproj", "{A9E65F73-B6AE-41D8-8555-9504659F24D3}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day12_Caves", "Day12_Caves\Day12_Caves.csproj", "{C47004A1-9AD4-4D13-8FA5-C1F116C577E2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +101,10 @@ Global
 		{A9E65F73-B6AE-41D8-8555-9504659F24D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A9E65F73-B6AE-41D8-8555-9504659F24D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A9E65F73-B6AE-41D8-8555-9504659F24D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C47004A1-9AD4-4D13-8FA5-C1F116C577E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C47004A1-9AD4-4D13-8FA5-C1F116C577E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C47004A1-9AD4-4D13-8FA5-C1F116C577E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C47004A1-9AD4-4D13-8FA5-C1F116C577E2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
