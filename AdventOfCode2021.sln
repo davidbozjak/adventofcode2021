@@ -35,6 +35,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day11_FlashingOctopi", "Day
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day12_Caves", "Day12_Caves\Day12_Caves.csproj", "{C47004A1-9AD4-4D13-8FA5-C1F116C577E2}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day13_FoldingWorld", "Day13_FoldingWorld\Day13_FoldingWorld.csproj", "{734379F0-AE28-486B-9D96-0FAF9098B322}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,6 +107,10 @@ Global
 		{C47004A1-9AD4-4D13-8FA5-C1F116C577E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C47004A1-9AD4-4D13-8FA5-C1F116C577E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C47004A1-9AD4-4D13-8FA5-C1F116C577E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{734379F0-AE28-486B-9D96-0FAF9098B322}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{734379F0-AE28-486B-9D96-0FAF9098B322}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{734379F0-AE28-486B-9D96-0FAF9098B322}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{734379F0-AE28-486B-9D96-0FAF9098B322}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
