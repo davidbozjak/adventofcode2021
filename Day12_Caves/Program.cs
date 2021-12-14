@@ -13,15 +13,21 @@ foreach (var link in input)
 var start = factory.AllCreatedInstances.Where(w => w.Name == "start").First();
 var end = factory.AllCreatedInstances.Where(w => w.Name == "end").First();
 
+var part1Stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
 var allPaths = new List<List<Cave>>();
 Explore(start, end, new List<Cave>(), allPaths, false);
+part1Stopwatch.Stop();
 
-Console.WriteLine($"Part 1: {allPaths.Count}");
+Console.WriteLine($"Part 1: {allPaths.Count} in {part1Stopwatch.ElapsedMilliseconds} ms");
+
+var part2Stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
 var allPathsWithAdvancedRules = new List<List<Cave>>();
 Explore(start, end, new List<Cave>(), allPathsWithAdvancedRules, true);
+part2Stopwatch.Stop();
 
-Console.WriteLine($"Part 2: {allPathsWithAdvancedRules.Count}");
+Console.WriteLine($"Part 2: {allPathsWithAdvancedRules.Count} in {part2Stopwatch.ElapsedMilliseconds} ms");
 
 void Explore(Cave current, Cave endNode, List<Cave> path, List<List<Cave>> completedPaths, bool enhancedRules)
 {
