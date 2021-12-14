@@ -5,12 +5,14 @@
     public bool IsBigCave { get; init; }
 
     private readonly List<Cave> neighbours = new();
-    public IReadOnlyCollection<Cave> Neighbours => this.neighbours.AsReadOnly();
+    private readonly Cached<IReadOnlyCollection<Cave>> cachedReadOnlyNeighbours;
+    public IReadOnlyCollection<Cave> Neighbours => cachedReadOnlyNeighbours.Value;
 
     public Cave(string name)
     {
         this.Name = name;
         this.IsBigCave = name[0] < 'a';
+        this.cachedReadOnlyNeighbours = new Cached<IReadOnlyCollection<Cave>>(() => this.neighbours.AsReadOnly());
     }
 
     public void AddNeighbour(Cave cave)
