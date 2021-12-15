@@ -3,36 +3,36 @@
 var input = new InputProvider<int[]>("Input.txt", ParseRow).ToList();
 var factory = new UniqueFactory<(int x, int y, int risk), Cell>(w => new Cell(w.x, w.y, w.risk));
 
-int height = input.Count;
-int width = input[0].Length;
+int mapHeight = input.Count;
+int mapWidth = input[0].Length;
+
+int minX = 0;
+int minY = 0;
+int maxX = mapWidth;
+int maxY = mapHeight;
 
 var startNode = factory.GetOrCreateInstance((0, 0, input[0][0]));
+var part1EndNode = factory.GetOrCreateInstance((mapWidth - 1, mapHeight - 1, input[^1][^1]));
 
-//part 1:
-//var endNode = factory.GetOrCreateInstance((width - 1, height - 1, input[^1][^1]));
+var part1CheapestPath = AStarPathfinder.FindPath(startNode, part1EndNode, GetRiskHeuristic, GetNeighbours);
 
-//part 2:
-var endNode = factory.GetOrCreateInstance((5*width - 1, 5*height - 1, GetRiskForLocation(5 * width - 1, 5 * height - 1)));
+if (part1CheapestPath == null) throw new Exception();
 
-var cheapestPath = AStarPathfinder.FindPath(startNode, endNode, GetRiskHeuristic, GetNeighbours);
+Console.WriteLine($"Part 1: {part1CheapestPath.Skip(1).Sum(w => w.Cost)}");
 
-if (cheapestPath == null) throw new Exception();
+maxX = 5 * mapWidth;
+maxY = 5 * mapHeight;
 
-Console.WriteLine($"Part 1: {cheapestPath.Skip(1).Sum(w => w.Cost)}");
+var part2EndNode = factory.GetOrCreateInstance((5 * mapWidth - 1, 5 * mapHeight - 1, GetRiskForLocation(5 * mapWidth - 1, 5 * mapHeight - 1)));
+
+var part2CheapestPath = AStarPathfinder.FindPath(startNode, part2EndNode, GetRiskHeuristic, GetNeighbours);
+
+if (part2CheapestPath == null) throw new Exception();
+
+Console.WriteLine($"Part 2: {part2CheapestPath.Skip(1).Sum(w => w.Cost)}");
 
 IEnumerable<Cell> GetNeighbours(Cell c)
 {
-    int minX = 0;
-    int minY = 0;
-
-    //Part 1 limits: 
-    //int maxX = width;
-    //int maxY = height;
-
-    //Part 2 limits:
-    int maxX = 5 * width;
-    int maxY = 5 * height;
-
     if (c.X - 1 >= minX) yield return factory.GetOrCreateInstance((c.X - 1, c.Y, GetRiskForLocation(c.X - 1, c.Y)));
     if (c.X + 1 < maxX) yield return factory.GetOrCreateInstance((c.X + 1, c.Y, GetRiskForLocation(c.X + 1, c.Y)));
 
@@ -45,10 +45,10 @@ int GetRiskForLocation(int x, int y)
     int additionX = 0;
     int additionY = 0;
 
-    if (x >= width) additionX = x / width;
-    if (y >= height) additionY = y / height;
+    if (x >= mapWidth) additionX = x / mapWidth;
+    if (y >= mapHeight) additionY = y / mapHeight;
 
-    int value = input[y % height][x % width] + additionX + additionY;
+    int value = input[y % mapHeight][x % mapWidth] + additionX + additionY;
 
     while (value > 9) value -= 9;
 
@@ -57,7 +57,6 @@ int GetRiskForLocation(int x, int y)
 
 int GetRiskHeuristic(Cell c)
 {
-    //return (Math.Abs(height - c.Y - 1) + Math.Abs(width - c.X - 1)) * 10;
     return 0; // always return 0 to get from A* to Dijkstra algorithm
 }
 
