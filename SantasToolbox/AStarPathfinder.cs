@@ -7,7 +7,15 @@ public interface INode : IWorldObject
 
 public static class AStarPathfinder
 {
-    public static List<T>? FindPath<T>(T start, T goal, Func<T, int> hFunc, Func<T, IEnumerable<T>> GetNeighbours)
+    /// <summary>
+    /// Utilizes A* algorithm to find a path from start to goal node
+    /// </summary>
+    /// <param name="start">Starting node</param>
+    /// <param name="goal">End node</param>
+    /// <param name="GetHeuristicCost">A function returning best guess cost from node to end node. Provide 0 for adaptation to Dijkstra's algorithm.</param>
+    /// <param name="GetNeighbours">A function that provides all reachable neighbours for each Node</param>
+    /// <returns>A List of visited nodes from start to goal, or null if no path could be found</returns>
+    public static List<T>? FindPath<T>(T start, T goal, Func<T, int> GetHeuristicCost, Func<T, IEnumerable<T>> GetNeighbours)
         where T : class, INode
     {
         var openSet = new List<T> { start };
@@ -19,7 +27,7 @@ public static class AStarPathfinder
 
         var fScore = new Dictionary<INode, int>
         {
-            [start] = hFunc(start)
+            [start] = GetHeuristicCost(start)
         };
 
         while (openSet.Count > 0)
@@ -51,7 +59,7 @@ public static class AStarPathfinder
                 {
                     cameFrom[neighbour] = current;
                     gScore[neighbour] = tentativeScore;
-                    fScore[neighbour] = tentativeScore + hFunc(neighbour);
+                    fScore[neighbour] = tentativeScore + GetHeuristicCost(neighbour);
 
                     if (!openSet.Contains(neighbour))
                         openSet.Add(neighbour);
