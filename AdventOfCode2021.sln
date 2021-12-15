@@ -39,6 +39,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day13_FoldingWorld", "Day13
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day14_Polymers", "Day14_Polymers\Day14_Polymers.csproj", "{3C8DE7A7-2DED-424F-8482-8AC2751A8AF7}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day15_CavePathfinding", "Day15_CavePathfinding\Day15_CavePathfinding.csproj", "{F9A201C4-67A8-4278-B3DC-790E7EB09BAB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -117,6 +119,10 @@ Global
 		{3C8DE7A7-2DED-424F-8482-8AC2751A8AF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C8DE7A7-2DED-424F-8482-8AC2751A8AF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C8DE7A7-2DED-424F-8482-8AC2751A8AF7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9A201C4-67A8-4278-B3DC-790E7EB09BAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9A201C4-67A8-4278-B3DC-790E7EB09BAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9A201C4-67A8-4278-B3DC-790E7EB09BAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9A201C4-67A8-4278-B3DC-790E7EB09BAB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
