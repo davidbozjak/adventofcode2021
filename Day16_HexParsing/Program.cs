@@ -70,7 +70,7 @@ for (int i = 0; currentPacket != null;)
                 var totalLengthInBits = BinaryToDec(binaryString.Substring(i + 1, 15));
 
                 currentPacket.DecreaseRemainingCharsIfNeeded(16);
-                currentPacket.remainingChars = totalLengthInBits;
+                currentPacket.RemainingChars = totalLengthInBits;
 
                 i += 16;
             }
@@ -79,7 +79,7 @@ for (int i = 0; currentPacket != null;)
                 var numberOfSubpackets = BinaryToDec(binaryString.Substring(i + 1, 11));
 
                 for (int j = 0; j < numberOfSubpackets; j++)
-                    currentPacket.subPackets.Add(new Packet(currentPacket));
+                    currentPacket.SubPackets.Add(new Packet(currentPacket));
 
                 i += 12;
                 currentPacket.DecreaseRemainingCharsIfNeeded(12);
@@ -117,37 +117,38 @@ enum Mode { Unknown, RemainingBits, Packets};
 
 class Packet
 {
-    public int startIndex { get; set; }
     public int Version { get; set; }
-    public int remainingChars { get; set; }
+    public int RemainingChars { get; set; }
 
-    public List<Packet> subPackets = new();
+    public List<Packet> SubPackets { get; } = new();
+    
     public Packet Parent { get; }
 
-    private string literalValueString = null;
+    private string? literalValueString = null;
+    private int returnedPackets = 0;
 
-    public int GetValue()
+    public long GetValue()
     {
         switch (this.Type)
         {
             case PacketType.Sum:
-                return this.subPackets.Sum(w => w.GetValue());
+                return this.SubPackets.Sum(w => w.GetValue());
             case PacketType.Product:
-                var product = 1;
-                foreach (var packet in this.subPackets) product *= packet.GetValue();
+                long product = 1;
+                foreach (var packet in this.SubPackets) product *= packet.GetValue();
                 return product;
             case PacketType.Minimum:
-                return this.subPackets.Min(w => w.GetValue());
+                return this.SubPackets.Min(w => w.GetValue());
             case PacketType.Maximum:
-                return this.subPackets.Max(w => w.GetValue());
+                return this.SubPackets.Max(w => w.GetValue());
             case PacketType.LiteralValue:
-                return Convert.ToInt32(this.literalValueString, 2);
+                return Convert.ToInt64(this.literalValueString, 2);
             case PacketType.GreaterThan:
-                return this.subPackets[0].GetValue() > this.subPackets[1].GetValue() ? 1 : 0;
+                return this.SubPackets[0].GetValue() > this.SubPackets[1].GetValue() ? 1 : 0;
             case PacketType.LessThan:
-                return this.subPackets[0].GetValue() < this.subPackets[1].GetValue() ? 1 : 0;
+                return this.SubPackets[0].GetValue() < this.SubPackets[1].GetValue() ? 1 : 0;
             case PacketType.EqualTo:
-                return this.subPackets[0].GetValue() == this.subPackets[1].GetValue() ? 1 : 0;
+                return this.SubPackets[0].GetValue() == this.SubPackets[1].GetValue() ? 1 : 0;
             default: throw new Exception();
         }
     }
@@ -170,27 +171,29 @@ class Packet
 
     public Packet? FinalizePacket()
     {
-        if (this.remainingChars > 0)
+        if (this.RemainingChars > 0)
         {
             var newPacket = new Packet(this);
-            this.subPackets.Add(newPacket);
+            this.SubPackets.Add(newPacket);
+            this.returnedPackets++;
             return newPacket;
+        }
+        
+        if (this.returnedPackets < this.SubPackets.Count)
+        {
+            return this.SubPackets[this.returnedPackets++];
         }
 
         if (this.Parent == null) return null;
-
-        var index = this.Parent.subPackets.IndexOf(this);
-        if (this.Parent.subPackets.Count > index + 1) 
-            return this.Parent.subPackets[index + 1];
 
         return Parent?.FinalizePacket();
     }
 
     public void DecreaseRemainingCharsIfNeeded(int charsRead)
     {
-        if (this.remainingChars > 0)
+        if (this.RemainingChars > 0)
         {
-            this.remainingChars -= charsRead;
+            this.RemainingChars -= charsRead;
         }
 
         Parent?.DecreaseRemainingCharsIfNeeded(charsRead);
