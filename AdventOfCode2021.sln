@@ -41,6 +41,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day14_Polymers", "Day14_Pol
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day15_CavePathfinding", "Day15_CavePathfinding\Day15_CavePathfinding.csproj", "{F9A201C4-67A8-4278-B3DC-790E7EB09BAB}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day16_HexParsing", "Day16_HexParsing\Day16_HexParsing.csproj", "{896352D4-2134-471F-B6A5-24FC842292C9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -123,6 +125,10 @@ Global
 		{F9A201C4-67A8-4278-B3DC-790E7EB09BAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9A201C4-67A8-4278-B3DC-790E7EB09BAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9A201C4-67A8-4278-B3DC-790E7EB09BAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{896352D4-2134-471F-B6A5-24FC842292C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{896352D4-2134-471F-B6A5-24FC842292C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{896352D4-2134-471F-B6A5-24FC842292C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{896352D4-2134-471F-B6A5-24FC842292C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
