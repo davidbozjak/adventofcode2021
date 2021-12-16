@@ -57,7 +57,8 @@ int GetRiskForLocation(int x, int y)
 
 int GetRiskHeuristic(Cell c)
 {
-    return 0; // always return 0 to get from A* to Dijkstra algorithm
+    return (maxX - c.X) + (maxY - c.Y); //manhattan distance, ignoring risk, to be always less than or equal than actual cost
+    //return 0; // always return 0 to get from A* to Dijkstra algorithm
 }
 
 static bool ParseRow(string? input, out int[] row)

@@ -29,10 +29,11 @@ public static class AStarPathfinder
         {
             [start] = GetHeuristicCost(start)
         };
-
+        
         while (openSet.Count > 0)
         {
-            var current = openSet.Where(w => fScore.ContainsKey(w)).OrderBy(w => fScore[w]).First();
+            var current = openSet.OrderBy(w => fScore[w]).First();
+            openSet.Remove(current);
 
             if (current == goal)
             {
@@ -47,8 +48,6 @@ public static class AStarPathfinder
 
                 return path;
             }
-
-            openSet.Remove(current);
 
             foreach (var neighbour in GetNeighbours(current))
             {
