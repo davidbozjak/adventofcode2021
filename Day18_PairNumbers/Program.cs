@@ -4,11 +4,19 @@ var numbers = new InputProvider<PairNumber?>("Input.txt", GetPairNumber)
     .Where(w => w != null)
     .Cast<PairNumber>().ToList();
 
-foreach (var number in numbers)
+//foreach (var number in numbers)
+//{
+//    Console.WriteLine(number);
+//    number.Reduce();
+//    Console.WriteLine(number);
+//}
+
+var addedNumber = numbers[0];
+foreach (var number in numbers.Skip(1))
 {
-    Console.WriteLine(number);
-    number.Reduce(0);
-    Console.WriteLine(number);
+    addedNumber = addedNumber + number;
+    addedNumber.Reduce();
+    Console.WriteLine(addedNumber);
 }
 
 
@@ -78,25 +86,53 @@ class PairNumber
         this.Parent = parent;
     }
 
-    public void Reduce(int level)
+    public PairNumber(PairNumber left, PairNumber right)
     {
-        if (this.Value != null) return;
+        this.Value = null;
+        this.Parent = null;
+        this.Left = left;
+        this.Right = right;
 
+        left.Parent = this;
+        right.Parent = this;
+    }
+
+    public void Reduce()
+    {
+        bool hasChanged;
+        do
+        {
+            Console.WriteLine(this);
+            hasChanged = this.Reduce(0);
+        }while (hasChanged);
+    }
+
+    private bool Reduce(int level)
+    {
         if (level == 4)
         {
-            this.Explode();
+            if (this.Value == null) // only pair numbers can be exploded
+            {
+                this.Explode();
+                return true;
+            }
         }
         else
         {
-            this.Left?.Reduce(level + 1);
-            this.Right?.Reduce(level + 1);
+            if (this.Left != null && this.Left.Reduce(level + 1))
+                return true;
+
+            if (this.Right != null && this.Right.Reduce(level + 1))
+                return true;
         }
 
-        //if (this.Left.Value != null && this.Left.Value > 10)
-        //    this.Left.Split();
+        if (this.Value != null && this.Value >= 10)
+        {
+            this.Split();
+            return true;
+        }
 
-        //if (this.Right.Value != null && this.Right.Value > 10)
-        //    this.Right.Split();
+        return false;
     }
 
     private void Explode()
@@ -105,48 +141,73 @@ class PairNumber
         if (this.Left == null || this.Left.Value == null) throw new Exception();
         if (this.Right == null || this.Right.Value == null) throw new Exception();
 
-        PairNumber? parentLeft = this.Parent?.Left;
+        var firstLeftNumber = FirstNormalNumberOnLeft(this, true);
 
-        if (parentLeft == this)
+        if (firstLeftNumber != null)
         {
-            while (parentLeft == parentLeft?.Parent?.Left) parentLeft = parentLeft?.Parent;
-            parentLeft = parentLeft?.Parent;
+            if (firstLeftNumber.Value == null) throw new Exception();
+            firstLeftNumber.Value += this.Left.Value;
         }
 
-        if (parentLeft != null)
+        var firstRightNumber = FirstNormalNumberOnRight(this, true);
+
+        if (firstRightNumber != null)
         {
-            PairNumber right = parentLeft;
-            while (right.Right != null) right = right.Right;
-
-            if (right.Value == null) throw new Exception();
-            right.Value += this.Left.Value;
-        }
-
-        PairNumber? parentRight = this.Parent?.Right;
-
-        if (parentRight == this)
-        {
-            while (parentRight == parentRight?.Parent?.Right) parentRight = parentRight?.Parent;
-            parentRight = parentRight?.Parent?.Right;
-        }
-
-        if (parentRight != null)
-        {
-            PairNumber left = parentRight;
-            while (left.Left != null) left = left.Left;
-
-            if (left.Value == null) throw new Exception();
-            left.Value += this.Right.Value;
+            if (firstRightNumber.Value == null) throw new Exception();
+            firstRightNumber.Value += this.Right.Value;
         }
 
         this.Left = null;
         this.Right = null;
         this.Value = 0;
+
+        static PairNumber? FirstNormalNumberOnLeft(PairNumber node, bool upPhase)
+        {
+            if (upPhase)
+            {
+                if (node.Parent == null) return null;
+
+                if (node.Parent.Left == node)
+                    return FirstNormalNumberOnLeft(node.Parent, true);
+
+                if (node.Parent.Left.Value != null) return node.Parent.Left;
+                else return FirstNormalNumberOnLeft(node.Parent.Left, false);
+            }
+            else
+            {
+                if (node.Right.Value != null) return node.Right;
+                else return FirstNormalNumberOnLeft(node.Right, false);
+            }
+        }
+
+        static PairNumber? FirstNormalNumberOnRight(PairNumber node, bool upPhase)
+        {
+            if (upPhase)
+            {
+                if (node.Parent == null) return null;
+
+                if (node.Parent.Right == node)
+                    return FirstNormalNumberOnRight(node.Parent, true);
+
+                if (node.Parent.Right.Value != null) return node.Parent.Right;
+                else return FirstNormalNumberOnRight(node.Parent.Right, false);
+            }
+            else
+            {
+                if (node.Left.Value != null) return node.Left;
+                else return FirstNormalNumberOnRight(node.Left, false);
+            }
+        }
     }
 
     private void Split()
     {
-        throw new NotImplementedException();
+        if (this.Value == null) throw new Exception();
+        if (this.Left != null || this.Right != null) throw new Exception();
+
+        this.Left = new PairNumber((int)(this.Value / 2.0), this);
+        this.Right = new PairNumber((int)(this.Value - this.Left.Value), this);
+        this.Value = null;
     }
 
     public void GetMagnitude()
@@ -154,9 +215,9 @@ class PairNumber
         throw new NotImplementedException();
     }
 
-    public PairNumber Addition(PairNumber number)
+    public static PairNumber operator +(PairNumber number1, PairNumber number2)
     {
-        throw new NotImplementedException();
+        return new PairNumber(number1, number2);
     }
 
     public override string ToString()
