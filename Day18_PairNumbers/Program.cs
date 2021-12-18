@@ -50,7 +50,13 @@ class PairNumber
         }
         else
         {
-            endOfLeft = str[..^1].LastIndexOf(']') + 1;
+            int level = 1;
+            for (endOfLeft = 2; level > 0; endOfLeft++)
+            {
+                if (str[endOfLeft] == '[') level++;
+                else if (str[endOfLeft] == ']') level--;
+            }
+
             this.Left = new PairNumber(str[1..endOfLeft], this);
         }
 
