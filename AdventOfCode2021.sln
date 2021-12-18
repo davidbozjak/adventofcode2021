@@ -45,6 +45,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day16_HexParsing", "Day16_H
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day17_ProbeBallistics", "Day17_ProbeBallistics\Day17_ProbeBallistics.csproj", "{C38AA6C6-C8C6-4C9C-964E-2EA69DF3E044}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day18_PairNumbers", "Day18_PairNumbers\Day18_PairNumbers.csproj", "{CAC78C15-DA28-4194-9A62-05140E917395}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -135,6 +137,10 @@ Global
 		{C38AA6C6-C8C6-4C9C-964E-2EA69DF3E044}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C38AA6C6-C8C6-4C9C-964E-2EA69DF3E044}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C38AA6C6-C8C6-4C9C-964E-2EA69DF3E044}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAC78C15-DA28-4194-9A62-05140E917395}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAC78C15-DA28-4194-9A62-05140E917395}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAC78C15-DA28-4194-9A62-05140E917395}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAC78C15-DA28-4194-9A62-05140E917395}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
