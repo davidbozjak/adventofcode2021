@@ -4,21 +4,15 @@ var numbers = new InputProvider<PairNumber?>("Input.txt", GetPairNumber)
     .Where(w => w != null)
     .Cast<PairNumber>().ToList();
 
-//foreach (var number in numbers)
-//{
-//    Console.WriteLine(number);
-//    number.Reduce();
-//    Console.WriteLine(number);
-//}
-
 var addedNumber = numbers[0];
+
 foreach (var number in numbers.Skip(1))
 {
     addedNumber = addedNumber + number;
     addedNumber.Reduce();
-    Console.WriteLine(addedNumber);
 }
 
+Console.WriteLine($"Part 1: {addedNumber.GetMagnitude()}");
 
 static bool GetPairNumber(string? input, out PairNumber? value)
 {
@@ -102,12 +96,16 @@ class PairNumber
         bool hasChanged;
         do
         {
-            Console.WriteLine(this);
-            hasChanged = this.Reduce(0);
-        }while (hasChanged);
+            hasChanged = this.AnyExplode(0);
+
+            if (!hasChanged)
+            {
+                hasChanged = this.AnySplit();
+            }
+        } while (hasChanged);
     }
 
-    private bool Reduce(int level)
+    private bool AnyExplode(int level)
     {
         if (level == 4)
         {
@@ -119,17 +117,11 @@ class PairNumber
         }
         else
         {
-            if (this.Left != null && this.Left.Reduce(level + 1))
+            if (this.Left != null && this.Left.AnyExplode(level + 1))
                 return true;
 
-            if (this.Right != null && this.Right.Reduce(level + 1))
+            if (this.Right != null && this.Right.AnyExplode(level + 1))
                 return true;
-        }
-
-        if (this.Value != null && this.Value >= 10)
-        {
-            this.Split();
-            return true;
         }
 
         return false;
@@ -200,6 +192,25 @@ class PairNumber
         }
     }
 
+    private bool AnySplit()
+    {
+        if (this.Value != null)
+        {
+            if (this.Value >= 10)
+            {
+                this.Split();
+                return true;
+            }
+        }
+        else
+        {
+            if (this.Left.AnySplit()) return true;
+            if (this.Right.AnySplit()) return true;
+        }
+
+        return false;
+    }
+
     private void Split()
     {
         if (this.Value == null) throw new Exception();
@@ -210,9 +221,11 @@ class PairNumber
         this.Value = null;
     }
 
-    public void GetMagnitude()
+    public long GetMagnitude()
     {
-        throw new NotImplementedException();
+        if (this.Value != null) return this.Value.Value;
+
+        return (3 * this.Left.GetMagnitude() + (2 * this.Right.GetMagnitude()));
     }
 
     public static PairNumber operator +(PairNumber number1, PairNumber number2)
