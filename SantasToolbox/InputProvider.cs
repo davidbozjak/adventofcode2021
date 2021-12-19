@@ -18,7 +18,7 @@ public class InputProvider<T> : IEnumerator<T>, IEnumerable<T>
 
     public bool EndAtEmptyLine { get; set; } = true;
 
-    public T Current { get; private set; }
+    public T? Current { get; private set; }
 
     object? IEnumerator.Current => this.Current;
 
@@ -41,8 +41,11 @@ public class InputProvider<T> : IEnumerator<T>, IEnumerable<T>
             this.Current = result;
             return true;
         }
-
-        return false;
+        else
+        {
+            this.Current = default;
+            return false;
+        }
     }
 
     public void Reset()
@@ -50,7 +53,7 @@ public class InputProvider<T> : IEnumerator<T>, IEnumerable<T>
         this.fileStream.Reset();
     }
 
-    public IEnumerator<T> GetEnumerator()
+    public IEnumerator<T?> GetEnumerator()
     {
         while (this.MoveNext())
         {
