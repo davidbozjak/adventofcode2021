@@ -2,6 +2,8 @@
 var scannerParser = new MultiLineParser<ScannedWorld>(() => new ScannedWorld(), (world, value) => world.AddScannedRow(value));
 var scanners = scannerParser.AddRange(inputParser);
 
+var part1Stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
 var masterScanner = scanners[0];
 var unmatched = scanners.Skip(1).ToList();
 
@@ -17,8 +19,11 @@ while (unmatched.Count > 0)
         }
     }
 }
+part1Stopwatch.Stop();
 
-Console.WriteLine($"Part 1: {masterScanner.WorldObjects.Count()}");
+Console.WriteLine($"Part 1: {masterScanner.WorldObjects.Count()}, done in {part1Stopwatch.ElapsedMilliseconds}ms");
+
+var part2Stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
 long maxManhattanDistance = long.MinValue;
 
@@ -35,7 +40,9 @@ foreach (var scanner1 in scanners)
     }
 }
 
-Console.WriteLine($"Part 2: {maxManhattanDistance}");
+part2Stopwatch.Stop();
+
+Console.WriteLine($"Part 2: {maxManhattanDistance}, done in {part2Stopwatch.ElapsedMilliseconds}ms");
 
 static bool GetString(string? input, out string? value)
 {

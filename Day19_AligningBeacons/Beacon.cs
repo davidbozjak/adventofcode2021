@@ -82,9 +82,7 @@ class Beacon : IWorldObject
     {
         if (obj == null) return false;
 
-        Beacon other = obj as Beacon;
-
-        if (other == null) return false;
+        if (obj is not Beacon other) return false;
 
         return this.X == other.X && this.Y == other.Y && this.Z == other.Z;
     }
