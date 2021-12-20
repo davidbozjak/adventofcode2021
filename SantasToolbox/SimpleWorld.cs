@@ -7,7 +7,7 @@
 
         private readonly List<T> worldObjects;
 
-        public SimpleWorld(IList<T> objects)
+        public SimpleWorld(IEnumerable<T> objects)
         {
             this.worldObjects = objects.ToList();
         }
