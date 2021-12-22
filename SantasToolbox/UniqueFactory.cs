@@ -24,6 +24,9 @@ public class UniqueFactory<T, U>
         return this.allCreatedInstances[identifier];
     }
 
+    public bool InstanceForIdentifierExists(T identifier)
+        => this.allCreatedInstances.ContainsKey(identifier);
+
     public void InsertSpecialInstance(T key, U value)
     {
         this.allCreatedInstances[key] = value;
