@@ -1,87 +1,48 @@
-﻿using System.Drawing;
+﻿using System.Diagnostics;
 using System.Text.RegularExpressions;
-using System.Diagnostics;
 
 var instructions = new InputProvider<Instruction?>("Input.txt", GetInstruction)
     .Where(w => w != null)
     .Cast<Instruction>()
     .ToList();
 
-Console.WriteLine(instructions.Count);
+var regions = instructions.Select(w => new BitRegion(w.MinX, w.MaxX, w.MinY, w.MaxY, w.MinZ, w.MaxZ)).ToList();
+var cappingRegion = new BitRegion(-50, 50, -50, 50, -50, 50);
+var regionsCappedTo50 = regions.Select(w => BitRegion.GetIntersectingRegion(w, cappingRegion))
+    .ToList();
 
-int minX = instructions.Select(w => w.MinX).Min();
-int maxX = instructions.Select(w => w.MaxX).Max();
-int minY = instructions.Select(w => w.MinY).Min();
-int maxY = instructions.Select(w => w.MaxY).Max();
-int minZ = instructions.Select(w => w.MinZ).Min();
-int maxZ = instructions.Select(w => w.MaxZ).Max();
+var totalOnCapped = Enumerable.Range(0, instructions.Count)
+    .Where(w => instructions[w].On)
+    .Where(w => regionsCappedTo50[w] != null)
+    .Sum(w => GetUniqueVolume(regionsCappedTo50[w], regionsCappedTo50.Where(region => region != null).Skip(w + 1)));
 
-long countOn = 0;
-long lastPercentage = int.MinValue;
+var totalOn = Enumerable.Range(0, instructions.Count)
+    .Where(w => instructions[w].On)
+    .Sum(w => GetUniqueVolume(regions[w], regions.Skip(w + 1)));
 
-for (long x = minX; x <= maxX; x++)
+Console.WriteLine($"Part 1: {totalOnCapped}");
+Console.WriteLine($"Part 2: {totalOn}");
+
+// A recursive method that only gives volume for the cube that never appears in another (following) region
+static long GetUniqueVolume(BitRegion region, IEnumerable<BitRegion> otherRegions)
 {
-    var relavantInstructions = instructions
-        .Where(w => x >= w.MinX && x <= w.MaxX);
+    var conflicts = new List<BitRegion>();
 
-    if (!relavantInstructions.Any()) continue;
-
-    var percentage = (x - minX) / (maxX - minX);
-    if (percentage != lastPercentage)
+    foreach (var otherRegion in otherRegions)
     {
-        Console.WriteLine($"{DateTime.Now} : ~{percentage}% done");
-        lastPercentage = percentage;
-    }
+        var intersection = BitRegion.GetIntersectingRegion(region, otherRegion);
 
-    for (long y = relavantInstructions.Min(w => w.MinY); y <= relavantInstructions.Max(w => w.MaxY); y++)
-    {
-        relavantInstructions = relavantInstructions
-            .Where(w => y >= w.MinY && y <= w.MaxY);
-
-        if (!relavantInstructions.Any()) continue;
-
-        for (long z = relavantInstructions.Min(w => w.MinZ); z <= relavantInstructions.Max(w => w.MaxZ); z++)
+        if (intersection != null)
         {
-            relavantInstructions = relavantInstructions
-                .Where(w => z >= w.MinZ && z <= w.MaxZ);
-
-            if (!relavantInstructions.Any()) continue;
-
-            bool isOn = false;
-
-            foreach (var instruction in relavantInstructions)
-            {
-                isOn = instruction.On;
-            }
-
-            if (isOn) 
-                countOn++;
+            conflicts.Add(intersection);
         }
     }
+
+    long volume = region.Size;
+    volume -= Enumerable.Range(0, conflicts.Count).Sum(w => GetUniqueVolume(conflicts[w], conflicts.Skip(w + 1)));
+
+    return volume;
 }
-
-Console.WriteLine($"Part 2: Count on: {countOn}");
-
-//var boundingRegion = new BitRegion(minX, maxX, minY, maxY, minZ, maxZ) { Value = false };
-
-////Console.WriteLine(long.MaxValue);
-
-//foreach (var instruction in instructions)
-//{
-//    var region = new BitRegion(
-//        instruction.MinX, instruction.MaxX,
-//        instruction.MinY, instruction.MaxY,
-//        instruction.MinZ, instruction.MaxZ)
-//    {
-//        Value = instruction.On
-//    };
-
-//    boundingRegion.Update(region);
-//}
-
-
-//Console.WriteLine($"Part 2: Count on: {boundingRegion.CountOn}");
-
 
 static bool GetInstruction(string? input, out Instruction? value)
 {
@@ -105,7 +66,7 @@ static bool GetInstruction(string? input, out Instruction? value)
 
 record Instruction(bool On, int MinX, int MaxX, int MinY, int MaxY, int MinZ, int MaxZ);
 
-[DebuggerDisplay("X range: {MaxX - MinX} Y: {MaxY - MinY} Z: {MaxZ - MinZ}")]
+[DebuggerDisplay("Size: {Size} X {MinX}..{MaxX} ({MaxX - MinX + 1}) Y {MinY}..{MaxY} ({MaxY - MinY + 1}) Z {MinZ}..{MaxZ} ({MaxZ - MinZ + 1})")]
 class BitRegion
 {
     public int MinX { get; }
@@ -115,18 +76,7 @@ class BitRegion
     public int MinZ { get; }
     public int MaxZ { get; }
 
-    public bool Value { get; set; }
-
-    public long Size => (long)Math.Max(1, this.MaxX - this.MinX) * (long)Math.Max(1, this.MaxY - this.MinY) * (long)Math.Max(1, this.MaxZ - this.MinZ);
-
-    //public long CountOn { get; private set; }
-
-    private readonly Cached<long> cachedCountOn;
-    public long CountOn => this.subregions.Count == 0 ?
-        this.Value ? this.Size : 0 :
-        this.subregions.Sum(w => w.CountOn);
-
-    private readonly List<BitRegion> subregions = new();
+    public long Size => (long)(this.MaxX - this.MinX + 1) * (this.MaxY - this.MinY + 1) * (this.MaxZ - this.MinZ + 1);
 
     public BitRegion(int minX, int maxX, int minY, int maxY, int minZ, int maxZ)
     {
@@ -136,12 +86,6 @@ class BitRegion
         this.MaxY = maxY;
         this.MinZ = minZ;
         this.MaxZ = maxZ;
-
-        this.cachedCountOn = new Cached<long>(CalculateCountOn);
-
-        //this.CountOn = initialValue ?
-        //    this.Size
-        //    : 0;
     }
 
     public static BitRegion? GetIntersectingRegion(BitRegion region1, BitRegion region2)
@@ -161,50 +105,6 @@ class BitRegion
             intersectZ.Value.startOfIntersect, intersectZ.Value.endOfIntersect);
     }
 
-    public void Update(BitRegion region)
-    {
-        var intersect = GetIntersectingRegion(this, region);
-
-        if (intersect != null)
-        {
-            bool fullyWithinOneRegion = false;
-
-            foreach (var subregion in this.subregions)
-            {
-                var interesectBetweenSubRegions = GetIntersectingRegion(subregion, region);
-
-                if (interesectBetweenSubRegions != null)
-                {
-
-
-                    Console.WriteLine("Intersecting subregions!");
-                }
-                else
-                {
-
-                }
-
-                subregion.Update(region);
-            }
-
-            if (!fullyWithinOneRegion)
-            {
-                this.subregions.Add(intersect);
-            }
-
-            this.cachedCountOn.Reset();
-
-            //if (this.Value)
-            //{
-            //    this.CountOn = this.Size - this.subregions.Where(w => w.Value == false).Sum(w => w.Size);
-            //}
-            //else
-            //{
-            //    this.CountOn = this.subregions.Sum(w => w.CountOn);
-            //}
-        }
-    }
-
     private static (int startOfIntersect, int endOfIntersect)? GetIntersectOnLine(int min1, int max1, int min2, int max2)
     {
         var maxMin = Math.Max(min1, min2);
@@ -212,45 +112,5 @@ class BitRegion
 
         if (minMax < maxMin) return null;
         return (maxMin, minMax);
-    }
-
-    private long CalculateCountOn()
-    {
-        if (this.Value)
-        {
-            return this.Size - this.subregions.Where(w => w.Value == false).Sum(w => w.CountOn);
-        }
-        else
-        {
-            return this.subregions.Sum(w => w.CountOn);
-        }
-    }
-
-    public override bool Equals(object? obj)
-    {
-        if (obj is not BitRegion other)
-        {
-            return false;
-        }
-
-        if (other.MinX != this.MinX) return false;
-        if (other.MaxX != this.MaxX) return false;
-        if (other.MinY != this.MinY) return false;
-        if (other.MaxY != this.MaxY) return false;
-        if (other.MinZ != this.MinZ) return false;
-        if (other.MaxZ != this.MaxZ) return false;
-
-        return true;
-    }
-
-    public override int GetHashCode()
-    {
-        return
-            this.MinX.GetHashCode() *
-            this.MaxX.GetHashCode() *
-            this.MinY.GetHashCode() *
-            this.MaxY.GetHashCode() *
-            this.MinZ.GetHashCode() *
-            this.MaxZ.GetHashCode();
     }
 }
