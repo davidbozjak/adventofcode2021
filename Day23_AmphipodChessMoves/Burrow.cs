@@ -3,81 +3,63 @@
 [DebuggerDisplay("{string.Concat(this.OccupiedSpaces)}")]
 class Burrow : IWorld, INode, IEquatable<Burrow>
 {
-    private readonly Dictionary<(int x, int y), Space> spaces;
+    public static IEnumerable<KeyValuePair<(int x, int y), Space>> EmptyBurrow;
+
+    private readonly IReadOnlyDictionary<(int x, int y), Space> spaces;
     private readonly Cached<IReadOnlyCollection<Space>> readOnlySpacesWrapper;
     public IEnumerable<IWorldObject> WorldObjects => this.readOnlySpacesWrapper.Value;
 
+    private readonly Cached<int> cachedMaxYValue;
     private readonly Cached<IList<Space>> cachedOccupiedSpaces;
     public IEnumerable<Space> OccupiedSpaces => this.cachedOccupiedSpaces.Value;
 
-    public int Cost { get; init; }
+    public int Cost { get; }
 
     public Burrow()
     {
-        this.spaces = new Dictionary<(int x, int y), Space>()
-        {
-            { (0, 0), new Space(0, 0, null) },
-            { (1, 0), new Space(1, 0, null) },
-            { (2, 0), new Space(2, 0, null) },
-            { (3, 0), new Space(3, 0, null) },
-            { (4, 0), new Space(4, 0, null) },
-            { (5, 0), new Space(5, 0, null) },
-            { (6, 0), new Space(6, 0, null) },
-            { (7, 0), new Space(7, 0, null) },
-            { (8, 0), new Space(8, 0, null) },
-            { (9, 0), new Space(9, 0, null) },
-            { (10, 0), new Space(10, 0, null) },
-            { (2, 1), new Space(2, 1, null) },
-            { (2, 2), new Space(2, 2, null) },
-            { (2, 3), new Space(2, 3, null) },
-            { (2, 4), new Space(2, 4, null) },
-            { (4, 1), new Space(4, 1, null) },
-            { (4, 2), new Space(4, 2, null) },
-            { (4, 3), new Space(4, 3, null) },
-            { (4, 4), new Space(4, 4, null) },
-            { (6, 1), new Space(6, 1, null) },
-            { (6, 2), new Space(6, 2, null) },
-            { (6, 3), new Space(6, 3, null) },
-            { (6, 4), new Space(6, 4, null) },
-            { (8, 1), new Space(8, 1, null) },
-            { (8, 2), new Space(8, 2, null) },
-            { (8, 3), new Space(8, 3, null) },
-            { (8, 4), new Space(8, 4, null) },
-        };
+        this.spaces = new Dictionary<(int x, int y), Space>(EmptyBurrow);
 
-        this.readOnlySpacesWrapper = new Cached<IReadOnlyCollection<Space>>(() => this.spaces.Values);
+        this.readOnlySpacesWrapper = new Cached<IReadOnlyCollection<Space>>(() => this.spaces.Values.ToList());
         this.cachedOccupiedSpaces = new Cached<IList<Space>>(() => this.spaces.Values.Where(w => w.IsOccupied).ToList());
+        this.cachedMaxYValue = new Cached<int>(() => this.spaces.Values.Select(w => w.Y).Max());
     }
 
     public Burrow(IEnumerable<(int x, int y, Player p)> occupiedSpaces)
         :this()
     {
+        var spacesToModify = new Dictionary<(int x, int y), Space>(EmptyBurrow);
+
         foreach ((int x, int y, Player p) in occupiedSpaces)
         {
             if (!this.spaces.ContainsKey((x, y)))
                 throw new Exception();
 
-            this.spaces[(x, y)] = this.spaces[(x, y)].Occpy(p);
+            spacesToModify[(x, y)] = spacesToModify[(x, y)].Occpy(p);
         }
+
+        this.spaces = spacesToModify;
     }
 
-    private Burrow(Burrow clone)
+    private Burrow(Burrow clone, (int x, int y) poz, (int x, int y) previouslyOccupiedSpace, Player player, int cost)
         :this()
     {
+        var spacesToModify = new Dictionary<(int x, int y), Space>(EmptyBurrow);
+
         foreach (var space in clone.OccupiedSpaces)
         {
-            this.spaces[(space.X, space.Y)] = this.spaces[(space.X, space.Y)].Occpy(space.Player);
+            spacesToModify[(space.X, space.Y)] = this.spaces[(space.X, space.Y)].Occpy(space.Player);
         }
+
+        spacesToModify[previouslyOccupiedSpace] = spacesToModify[previouslyOccupiedSpace].Occpy(null);
+        spacesToModify[poz] = spacesToModify[poz].Occpy(player);
+
+        this.spaces = spacesToModify;
+        this.Cost = cost;
     }
 
     public Burrow SetPlayer((int x, int y) poz, (int x, int y) previouslyOccupiedSpace, Player player, int cost)
     {
-        var newBurrow = new Burrow(this) { Cost = cost };
-
-        newBurrow.spaces[previouslyOccupiedSpace] = newBurrow.spaces[previouslyOccupiedSpace].Occpy(null);
-        newBurrow.spaces[poz] = newBurrow.spaces[poz].Occpy(player);
-        
-        return newBurrow;
+        return new Burrow(this, poz, previouslyOccupiedSpace, player, cost);
     }
 
     public IEnumerable<Burrow> GetPossibleMoves()
@@ -92,7 +74,7 @@ class Burrow : IWorld, INode, IEquatable<Burrow>
             {
                 bool allBelowOK = true;
 
-                for (int y = 4; y > currentSpace.Y; y--)
+                for (int y = this.cachedMaxYValue.Value; y > currentSpace.Y; y--)
                 {
                     if (!this.spaces[(currentSpace.X, y)].IsOccupied || (currentSpace.X != this.spaces[(currentSpace.X, y)].Player.DestinationX))
                     {
@@ -126,16 +108,35 @@ class Burrow : IWorld, INode, IEquatable<Burrow>
                     if (tile.x != player.DestinationX)
                         continue; // handle rule: "Amphipods will never move from the hallway into a room unless that room is their destination room"
 
-                    if ((this.spaces[(tile.x, 1)].IsOccupied && this.spaces[(tile.x, 1)].Player.DestinationX != tile.x) ||
-                        (this.spaces[(tile.x, 2)].IsOccupied && this.spaces[(tile.x, 2)].Player.DestinationX != tile.x) ||
-                        (this.spaces[(tile.x, 3)].IsOccupied && this.spaces[(tile.x, 3)].Player.DestinationX != tile.x) ||
-                        (this.spaces[(tile.x, 4)].IsOccupied && this.spaces[(tile.x, 4)].Player.DestinationX != tile.x))
-                        continue; // handle rule: "AND that room contains no amphipods which do not also have that room as their own destination."
+                    bool skipTileBecauseRoomHasWrongMembers = false;
+                    for (int y = 1; y <= this.cachedMaxYValue.Value; y++)
+                    {
+                        if (this.spaces[(tile.x, y)].IsOccupied && this.spaces[(tile.x, y)].Player.DestinationX != tile.x)
+                        {
+                            skipTileBecauseRoomHasWrongMembers = true;
+                            break;
+                        }
+                    }
 
-                    if ((tile.y == 1 && !this.spaces[(tile.x, 2)].IsOccupied) ||
-                        (tile.y == 2 && !this.spaces[(tile.x, 3)].IsOccupied) ||
-                        (tile.y == 3 && !this.spaces[(tile.x, 4)].IsOccupied))
-                        continue; // enforce that they always go to the bottom of the room first
+                    if (skipTileBecauseRoomHasWrongMembers)
+                    {
+                        continue;   // handle rule: "AND that room contains no amphipods which do not also have that room as their own destination."
+                    }
+
+                    bool skipTileBecauseNotAtBottom = false;
+                    for (int y = 1; y < this.cachedMaxYValue.Value; y++)
+                    {
+                        if (tile.y == y && !this.spaces[(tile.x, y + 1)].IsOccupied)
+                        {
+                            skipTileBecauseNotAtBottom = true;
+                            break;
+                        }
+                    }
+
+                    if (skipTileBecauseNotAtBottom)
+                    {
+                        continue;   // enforce that they always go to the bottom of the room first
+                    }
                 }
 
                 yield return this.SetPlayer(tile, currentSpace, player, cost);
