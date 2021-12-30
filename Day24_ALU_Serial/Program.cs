@@ -1,10 +1,7 @@
 ﻿var programLines = new InputProvider<Instruction?>("Input.txt", GetInstruction)
     .Where(w => w != null).Cast<Instruction>().ToList();
 
-//var computer = new ALU(programLines);
-//(long w, long x, long y, long z) = computer.RunProgramForInput(new List<long> { 1, 3, 5, 7, 9, 2, 4, 6, 8, 9, 9, 9, 9, 9 }.GetEnumerator());
-
-//Console.WriteLine($"w: {w} x: {x} y: {y} z: {z}");
+var fullSerialNumberValidator = new ALU(programLines);
 
 var digitValidators = new List<ALU>();
 int indexOfLastInputCommand = 0;
@@ -20,18 +17,37 @@ for (int i = 1; i <= programLines.Count; i++)
 
 if (digitValidators.Count != 14) throw new Exception("Domain knowledge, serial number is 14 digits long");
 
-Dictionary<(int digit, long previousOutput), long?> memcache = new();
+// use memoization to prune dead branches and speed up computation
+HashSet<(int digit, long previousOutput)> deadBranchLog = new();
 
 var maxNumber = SearchForMaxResult(0, 0, 0);
 
 if (maxNumber == null) throw new Exception();
 
+//validate number using full ALU
+(_, _, _, long outputPart1) = fullSerialNumberValidator.RunProgramForInput(0, 0, 0, 0, maxNumber.ToString().ToCharArray().Select(w => (long)(w - '0')).GetEnumerator());
+
+if (outputPart1 != 0) throw new Exception();
+
 Console.WriteLine($"Part 1: {maxNumber}");
+
+deadBranchLog = new();
+
+var minNumber = SearchForMinResult(0, 0, 0);
+
+if (minNumber == null) throw new Exception();
+
+//validate number using full ALU
+(_, _, _, long outputPart2) = fullSerialNumberValidator.RunProgramForInput(0, 0, 0, 0, minNumber.ToString().ToCharArray().Select(w => (long)(w - '0')).GetEnumerator());
+
+if (outputPart2 != 0) throw new Exception();
+
+Console.WriteLine($"Part 2: {minNumber}");
 
 long? SearchForMaxResult(int digit, long previousOutput, long currentNumber)
 {
-    if (memcache.ContainsKey((digit, previousOutput)))
-        return memcache[(digit, previousOutput)];
+    if (deadBranchLog.Contains((digit, previousOutput)))
+        return null;
 
     if (digit == 14)
     {
@@ -52,7 +68,36 @@ long? SearchForMaxResult(int digit, long previousOutput, long currentNumber)
             return result;
     }
 
-    memcache[(digit, previousOutput)] = null;
+    deadBranchLog.Add((digit, previousOutput));
+
+    return null;
+}
+
+long? SearchForMinResult(int digit, long previousOutput, long currentNumber)
+{
+    if (deadBranchLog.Contains((digit, previousOutput)))
+        return null;
+
+    if (digit == 14)
+    {
+        if (previousOutput == 0)
+            return currentNumber;
+        else return null;
+    }
+
+    var validator = digitValidators[digit];
+
+    for (int input = 1; input <= 9; input++)
+    {
+        (_, _, _, long output) = validator.RunProgramForInput(0, 0, 0, previousOutput, new List<long> { input }.GetEnumerator());
+        var newNumber = (currentNumber * 10) + input;
+        var result = SearchForMinResult(digit + 1, output, newNumber);
+
+        if (result != null)
+            return result;
+    }
+
+    deadBranchLog.Add((digit, previousOutput));
 
     return null;
 }
