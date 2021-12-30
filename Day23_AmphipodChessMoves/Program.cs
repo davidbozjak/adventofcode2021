@@ -6,7 +6,7 @@ var bronzePlayer = new Player('B', 10, 4);
 var copperPlayer = new Player('C', 100, 6);
 var desertPlayer = new Player('D', 1000, 8);
 
-// Example data:
+// Example data Part1:
 //var initialWorld = new Burrow(new[]
 //{
 //    (2, 1, bronzePlayer),
@@ -19,24 +19,67 @@ var desertPlayer = new Player('D', 1000, 8);
 //    (8, 2, amberPlayer),
 //});
 
-// Assignment data:
+//Example data Part2:
+//var initialWorld = new Burrow(new[]
+//{
+//    (2, 1, bronzePlayer),
+//    (2, 2, desertPlayer),
+//    (2, 3, desertPlayer),
+//    (2, 4, amberPlayer),
+//    (4, 1, copperPlayer),
+//    (4, 2, copperPlayer),
+//    (4, 3, bronzePlayer),
+//    (4, 4, desertPlayer),
+//    (6, 1, bronzePlayer),
+//    (6, 2, bronzePlayer),
+//    (6, 3, amberPlayer),
+//    (6, 4, copperPlayer),
+//    (8, 1, desertPlayer),
+//    (8, 2, amberPlayer),
+//    (8, 3, copperPlayer),
+//    (8, 4, amberPlayer),
+//});
+
+//Part 1 Assignment data:
+//var initialWorld = new Burrow(new[]
+//{
+//    (2, 1, bronzePlayer),
+//    (2, 2, copperPlayer),
+//    (4, 1, desertPlayer),
+//    (4, 2, desertPlayer),
+//    (6, 1, copperPlayer),
+//    (6, 2, bronzePlayer),
+//    (8, 1, amberPlayer),
+//    (8, 2, amberPlayer),
+//});
+
+//Part 2 Assignment data:
 var initialWorld = new Burrow(new[]
 {
     (2, 1, bronzePlayer),
-    (2, 2, copperPlayer),
+    (2, 2, desertPlayer),
+    (2, 3, desertPlayer),
+    (2, 4, copperPlayer),
     (4, 1, desertPlayer),
-    (4, 2, desertPlayer),
+    (4, 2, copperPlayer),
+    (4, 3, bronzePlayer),
+    (4, 4, desertPlayer),
     (6, 1, copperPlayer),
     (6, 2, bronzePlayer),
+    (6, 3, amberPlayer),
+    (6, 4, bronzePlayer),
     (8, 1, amberPlayer),
     (8, 2, amberPlayer),
+    (8, 3, copperPlayer),
+    (8, 4, amberPlayer),
 });
 
-//var almostIdealWorld = new Burrow(new[]
+//Part 1 final state:
+//var idealWorld = new Burrow(new[]
 //{
-//    (2, 1, bronzePlayer),
+//    (2, 1, amberPlayer),
 //    (2, 2, amberPlayer),
-//    (4, 1, amberPlayer),
+//    (4, 1, bronzePlayer),
 //    (4, 2, bronzePlayer),
 //    (6, 1, copperPlayer),
 //    (6, 2, copperPlayer),
@@ -44,19 +87,28 @@ var initialWorld = new Burrow(new[]
 //    (8, 2, desertPlayer),
 //});
 
+//Part 2 final state:
 var idealWorld = new Burrow(new[]
 {
     (2, 1, amberPlayer),
     (2, 2, amberPlayer),
+    (2, 3, amberPlayer),
+    (2, 4, amberPlayer),
     (4, 1, bronzePlayer),
     (4, 2, bronzePlayer),
+    (4, 3, bronzePlayer),
+    (4, 4, bronzePlayer),
     (6, 1, copperPlayer),
     (6, 2, copperPlayer),
+    (6, 3, copperPlayer),
+    (6, 4, copperPlayer),
     (8, 1, desertPlayer),
     (8, 2, desertPlayer),
+    (8, 3, desertPlayer),
+    (8, 4, desertPlayer),
 });
 
-int maxInRightRoom = int.MinValue;
+int minInWrongRoom = int.MaxValue;
 
 var printer = new WorldPrinter();
 printer.Print(initialWorld);
@@ -67,7 +119,7 @@ var path = AStarPathfinder.FindPath<Burrow>(initialWorld, idealWorld, GetHeurist
 //Console.WriteLine("Path found");
 //Console.ReadKey();
 
-//if (path == null) throw new Exception();
+if (path == null) throw new Exception();
 
 //foreach (var step in path)
 //{
@@ -81,11 +133,14 @@ int GetHeuristicScore(Burrow burrow)
 {
     var playersNotInTheRightRoom = burrow.OccupiedSpaces.Where(w => w.X != w.Player.DestinationX).ToList();
 
-    var playersInTheRightRoom = 8 - playersNotInTheRightRoom.Count;
-    if (playersInTheRightRoom > maxInRightRoom)
+    if (playersNotInTheRightRoom.Count < minInWrongRoom)
     {
-        maxInRightRoom = playersInTheRightRoom;
-        Console.WriteLine($"{DateTime.Now} found space for {playersInTheRightRoom}");
+        minInWrongRoom = playersNotInTheRightRoom.Count;
+
+        var printer = new WorldPrinter();
+        printer.Print(burrow);
+
+        Console.WriteLine($"{DateTime.Now}: {minInWrongRoom} left");
     }
 
     int total = 0;
@@ -93,6 +148,8 @@ int GetHeuristicScore(Burrow burrow)
     foreach (var player in playersNotInTheRightRoom)
     {
         total += Math.Abs(player.X - player.Player.DestinationX) * player.Player.CostMultiplyer;
+
+        total += (player.Y + 1) * player.Player.CostMultiplyer;
     }
 
     return total;
@@ -105,7 +162,8 @@ class Burrow : IWorld, INode, IEquatable<Burrow>
     private readonly Cached<IReadOnlyCollection<Space>> readOnlySpacesWrapper;
     public IEnumerable<IWorldObject> WorldObjects => this.readOnlySpacesWrapper.Value;
 
-    public IEnumerable<Space> OccupiedSpaces => this.spaces.Values.Where(w => w.IsOccupied);
+    private readonly Cached<IList<Space>> cachedOccupiedSpaces;
+    public IEnumerable<Space> OccupiedSpaces => this.cachedOccupiedSpaces.Value;
 
     public int Cost { get; init; }
 
@@ -126,15 +184,24 @@ class Burrow : IWorld, INode, IEquatable<Burrow>
             { (10, 0), new Space(10, 0, null) },
             { (2, 1), new Space(2, 1, null) },
             { (2, 2), new Space(2, 2, null) },
+            { (2, 3), new Space(2, 3, null) },
+            { (2, 4), new Space(2, 4, null) },
             { (4, 1), new Space(4, 1, null) },
             { (4, 2), new Space(4, 2, null) },
+            { (4, 3), new Space(4, 3, null) },
+            { (4, 4), new Space(4, 4, null) },
             { (6, 1), new Space(6, 1, null) },
             { (6, 2), new Space(6, 2, null) },
+            { (6, 3), new Space(6, 3, null) },
+            { (6, 4), new Space(6, 4, null) },
             { (8, 1), new Space(8, 1, null) },
             { (8, 2), new Space(8, 2, null) },
+            { (8, 3), new Space(8, 3, null) },
+            { (8, 4), new Space(8, 4, null) },
         };
 
         this.readOnlySpacesWrapper = new Cached<IReadOnlyCollection<Space>>(() => this.spaces.Values);
+        this.cachedOccupiedSpaces = new Cached<IList<Space>>(() => this.spaces.Values.Where(w => w.IsOccupied).ToList());
     }
 
     public Burrow(IEnumerable<(int x, int y, Player p)> occupiedSpaces)
@@ -175,6 +242,24 @@ class Burrow : IWorld, INode, IEquatable<Burrow>
 
         foreach ((var currentSpace, var player) in spaceWithPlayer)
         {
+            //check if this player is done, if yes do not move it
+            if (currentSpace.Y > 0 && currentSpace.X == player.DestinationX)
+            {
+                bool allBelowOK = true;
+
+                for (int y = 4; y > currentSpace.Y; y--)
+                {
+                    if (!this.spaces[(currentSpace.X, y)].IsOccupied || (currentSpace.X != this.spaces[(currentSpace.X, y)].Player.DestinationX))
+                    {
+                        allBelowOK = false;
+                        break;
+                    }
+                }
+
+                if (allBelowOK) 
+                    continue;
+            }
+
             var allReachableTiles = GetAllReachableTilesForPlayer(currentSpace, player, new List<(int x, int y)>());
 
             foreach((var tile, var cost) in allReachableTiles)
@@ -197,10 +282,14 @@ class Burrow : IWorld, INode, IEquatable<Burrow>
                         continue; // handle rule: "Amphipods will never move from the hallway into a room unless that room is their destination room"
 
                     if ((this.spaces[(tile.x, 1)].IsOccupied && this.spaces[(tile.x, 1)].Player.DestinationX != tile.x) ||
-                        (this.spaces[(tile.x, 2)].IsOccupied && this.spaces[(tile.x, 2)].Player.DestinationX != tile.x))
+                        (this.spaces[(tile.x, 2)].IsOccupied && this.spaces[(tile.x, 2)].Player.DestinationX != tile.x) ||
+                        (this.spaces[(tile.x, 3)].IsOccupied && this.spaces[(tile.x, 3)].Player.DestinationX != tile.x) ||
+                        (this.spaces[(tile.x, 4)].IsOccupied && this.spaces[(tile.x, 4)].Player.DestinationX != tile.x))
                         continue; // handle rule: "AND that room contains no amphipods which do not also have that room as their own destination."
 
-                    if (tile.y == 1 && !this.spaces[(tile.x, 2)].IsOccupied)
+                    if ((tile.y == 1 && !this.spaces[(tile.x, 2)].IsOccupied) ||
+                        (tile.y == 2 && !this.spaces[(tile.x, 3)].IsOccupied) ||
+                        (tile.y == 3 && !this.spaces[(tile.x, 4)].IsOccupied))
                         continue; // enforce that they always go to the bottom of the room first
                 }
 
