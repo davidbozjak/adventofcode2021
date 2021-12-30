@@ -7,6 +7,9 @@
         this.instructions = instructions.ToArray();
     }
 
+    public (long w, long x, long y, long z) RunProgramForInput(IEnumerator<long> inputs)
+        => RunProgramForInput(0, 0, 0, 0, inputs);
+
     public (long w, long x, long y, long z) RunProgramForInput(long initialW, long initialX, long initialY, long initialZ, IEnumerator<long> inputs)
     {
         long[] registers = new[] { initialW, initialX, initialY, initialZ };

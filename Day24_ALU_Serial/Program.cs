@@ -14,7 +14,7 @@ var maxNumber = Search(0, 0, 0, 9, 0, w => w - 1);
 if (maxNumber == null) throw new Exception();
 
 //validate number using full ALU
-(_, _, _, long outputPart1) = fullSerialNumberValidator.RunProgramForInput(0, 0, 0, 0, maxNumber.ToString().ToCharArray().Select(w => (long)(w - '0')).GetEnumerator());
+(_, _, _, long outputPart1) = fullSerialNumberValidator.RunProgramForInput(maxNumber.ToString().ToCharArray().Select(w => (long)(w - '0')).GetEnumerator());
 
 if (outputPart1 != 0) throw new Exception();
 
@@ -25,7 +25,7 @@ var minNumber = Search(0, 0, 0, 1, 10, w => w + 1);
 if (minNumber == null) throw new Exception();
 
 //validate number using full ALU
-(_, _, _, long outputPart2) = fullSerialNumberValidator.RunProgramForInput(0, 0, 0, 0, minNumber.ToString().ToCharArray().Select(w => (long)(w - '0')).GetEnumerator());
+(_, _, _, long outputPart2) = fullSerialNumberValidator.RunProgramForInput(minNumber.ToString().ToCharArray().Select(w => (long)(w - '0')).GetEnumerator());
 
 if (outputPart2 != 0) throw new Exception();
 
