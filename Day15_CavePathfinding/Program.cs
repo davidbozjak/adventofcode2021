@@ -72,7 +72,7 @@ static bool ParseRow(string? input, out int[] row)
     return true;
 }
 
-class Cell : INode
+class Cell : INode, IWorldObject, IEquatable<Cell>
 {
     public Point Position { get; init; }
 
@@ -89,5 +89,13 @@ class Cell : INode
     {
         this.Position = new Point(x, y);
         this.Cost = risk;
+    }
+
+    public bool Equals(Cell? other)
+    {
+        if (other == null) return false;
+
+        // This is OK since Cell creation is handled by UniqueFactory
+        return this == other;
     }
 }

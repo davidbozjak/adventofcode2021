@@ -1,6 +1,6 @@
 ﻿namespace SantasToolbox;
 
-public interface INode : IWorldObject
+public interface INode
 {
     int Cost { get; }
 }
@@ -16,9 +16,11 @@ public static class AStarPathfinder
     /// <param name="GetNeighbours">A function that provides all reachable neighbours for each Node</param>
     /// <returns>A List of visited nodes from start to goal, or null if no path could be found</returns>
     public static List<T>? FindPath<T>(T start, T goal, Func<T, int> GetHeuristicCost, Func<T, IEnumerable<T>> GetNeighbours)
-        where T : class, INode
+        where T : class, INode, IEquatable<T>
     {
-        var openSet = new List<T> { start };
+        var openSet = new PriorityQueue<T, int>();
+        openSet.Enqueue(start, 0);
+
         var cameFrom = new Dictionary<T, T>();
         var gScore = new Dictionary<T, int>
         {
@@ -32,10 +34,9 @@ public static class AStarPathfinder
         
         while (openSet.Count > 0)
         {
-            var current = openSet.OrderBy(w => fScore[w]).First();
-            openSet.Remove(current);
+            var current = openSet.Dequeue();
 
-            if (current == goal)
+            if (current.Equals(goal))
             {
                 //reconstruct path!
                 var path = new List<T>() { current };
@@ -58,10 +59,11 @@ public static class AStarPathfinder
                 {
                     cameFrom[neighbour] = current;
                     gScore[neighbour] = tentativeScore;
-                    fScore[neighbour] = tentativeScore + GetHeuristicCost(neighbour);
 
-                    if (!openSet.Contains(neighbour))
-                        openSet.Add(neighbour);
+                    var priority = tentativeScore + GetHeuristicCost(neighbour);
+                    
+                    fScore[neighbour] = priority;
+                    openSet.Enqueue(neighbour, priority); //Considering somehow handling duplicates?
                 }
             }
         }

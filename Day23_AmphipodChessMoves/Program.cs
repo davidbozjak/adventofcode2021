@@ -61,7 +61,8 @@ int maxInRightRoom = int.MinValue;
 var printer = new WorldPrinter();
 printer.Print(initialWorld);
 
-var path = AStarPathfinder.FindPath<Burrow>(initialWorld, idealWorld, GetHeuristicScore, burrow => burrow.GetPossibleMoves());
+var possibleMovesCache = new UniqueFactory<Burrow, List<Burrow>>(burrow => burrow.GetPossibleMoves().ToList());
+var path = AStarPathfinder.FindPath<Burrow>(initialWorld, idealWorld, GetHeuristicScore, possibleMovesCache.GetOrCreateInstance);
 
 //Console.WriteLine("Path found");
 //Console.ReadKey();
@@ -78,15 +79,23 @@ Console.WriteLine($"Part 1: { path.Sum(w => w.Cost)}");
 
 int GetHeuristicScore(Burrow burrow)
 {
-    var playersInTheRightRoom = burrow.OccupiedSpaces.Count(w => w.X == w.Player.DestinationX);
+    var playersNotInTheRightRoom = burrow.OccupiedSpaces.Where(w => w.X != w.Player.DestinationX).ToList();
 
+    var playersInTheRightRoom = 8 - playersNotInTheRightRoom.Count;
     if (playersInTheRightRoom > maxInRightRoom)
     {
         maxInRightRoom = playersInTheRightRoom;
         Console.WriteLine($"{DateTime.Now} found space for {playersInTheRightRoom}");
     }
 
-    return (8 - playersInTheRightRoom) * 2000;
+    int total = 0;
+
+    foreach (var player in playersNotInTheRightRoom)
+    {
+        total += Math.Abs(player.X - player.Player.DestinationX) * player.Player.CostMultiplyer;
+    }
+
+    return total;
 }
 
 [DebuggerDisplay("{string.Concat(this.OccupiedSpaces)}")]
@@ -191,6 +200,8 @@ class Burrow : IWorld, INode, IEquatable<Burrow>
                         (this.spaces[(tile.x, 2)].IsOccupied && this.spaces[(tile.x, 2)].Player.DestinationX != tile.x))
                         continue; // handle rule: "AND that room contains no amphipods which do not also have that room as their own destination."
 
+                    if (tile.y == 1 && !this.spaces[(tile.x, 2)].IsOccupied)
+                        continue; // enforce that they always go to the bottom of the room first
                 }
 
                 yield return this.SetPlayer(tile, currentSpace, player, cost);
