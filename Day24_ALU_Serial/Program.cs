@@ -1,10 +1,61 @@
 ﻿var programLines = new InputProvider<Instruction?>("Input.txt", GetInstruction)
     .Where(w => w != null).Cast<Instruction>().ToList();
 
-var computer = new ALU(programLines);
-var output = computer.RunProgramForInput(new List<int> { 1, 2, 3 }.GetEnumerator());
+//var computer = new ALU(programLines);
+//(long w, long x, long y, long z) = computer.RunProgramForInput(new List<long> { 1, 3, 5, 7, 9, 2, 4, 6, 8, 9, 9, 9, 9, 9 }.GetEnumerator());
 
-Console.WriteLine(programLines.Count);
+//Console.WriteLine($"w: {w} x: {x} y: {y} z: {z}");
+
+var digitValidators = new List<ALU>();
+int indexOfLastInputCommand = 0;
+
+for (int i = 1; i <= programLines.Count; i++)
+{
+    if (i == programLines.Count || programLines[i].Type == InstructionType.Input)
+    {
+        digitValidators.Add(new ALU(programLines.Skip(indexOfLastInputCommand).Take(i - indexOfLastInputCommand)));
+        indexOfLastInputCommand = i;
+    }
+}
+
+if (digitValidators.Count != 14) throw new Exception("Domain knowledge, serial number is 14 digits long");
+
+Dictionary<(int digit, long previousOutput), long?> memcache = new();
+
+var maxNumber = SearchForMaxResult(0, 0, 0);
+
+if (maxNumber == null) throw new Exception();
+
+Console.WriteLine($"Part 1: {maxNumber}");
+
+long? SearchForMaxResult(int digit, long previousOutput, long currentNumber)
+{
+    if (memcache.ContainsKey((digit, previousOutput)))
+        return memcache[(digit, previousOutput)];
+
+    if (digit == 14)
+    {
+        if (previousOutput == 0) 
+            return currentNumber;
+        else return null;
+    }
+
+    var validator = digitValidators[digit];
+
+    for (int input = 9; input > 0; input--)
+    {
+        (_, _, _, long output) = validator.RunProgramForInput(0, 0, 0, previousOutput, new List<long> { input }.GetEnumerator());
+        var newNumber = (currentNumber * 10) + input;
+        var result = SearchForMaxResult(digit + 1, output, newNumber);
+
+        if (result != null)
+            return result;
+    }
+
+    memcache[(digit, previousOutput)] = null;
+
+    return null;
+}
 
 static bool GetInstruction(string? input, out Instruction? value)
 {

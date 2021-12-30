@@ -7,19 +7,22 @@
         this.instructions = instructions.ToArray();
     }
 
-    public (int w, int x, int y, int z) RunProgramForInput(IEnumerator<int> inputs)
+    public (long w, long x, long y, long z) RunProgramForInput(long initialW, long initialX, long initialY, long initialZ, IEnumerator<long> inputs)
     {
-        int[] registers = new int[4];
+        long[] registers = new[] { initialW, initialX, initialY, initialZ };
 
+        Instruction? prevInstruction;
+        int stepCounter = 0;
         foreach (var instruction in instructions)
         {
-            var register1Id = instruction.Register1 - 'w';
-            var register2 = -1;
+            stepCounter++;
+            long register1Id = instruction.Register1 - 'w';
+            long register2 = -1;
             var register2explicitValue = false;
 
             if (instruction.Register2 != null)
             {
-                register2explicitValue = int.TryParse(instruction.Register2, out register2);
+                register2explicitValue = long.TryParse(instruction.Register2, out register2);
 
                 if (!register2explicitValue)
                 {
@@ -36,7 +39,7 @@
                     HandleAddInstruction(ref registers[register1Id], register2explicitValue ? register2 : registers[register2]);
                     break;
                 case InstructionType.Multiply:
-                    HandleAddInstruction(ref registers[register1Id], register2explicitValue ? register2 : registers[register2]);
+                    HandleMultiplyInstruction(ref registers[register1Id], register2explicitValue ? register2 : registers[register2]);
                     break;
                 case InstructionType.Divide:
                     HandleDivideInstruction(ref registers[register1Id], register2explicitValue ? register2 : registers[register2]);
@@ -50,12 +53,14 @@
                 default:
                     throw new Exception();
             }
+
+            prevInstruction = instruction;
         }
 
         return (registers[0], registers[1], registers[2], registers[3]);
     }
 
-    private void HandleInputInstruction(ref int register, IEnumerator<int> inputs)
+    private static void HandleInputInstruction(ref long register, IEnumerator<long> inputs)
     {
         if (!inputs.MoveNext()) 
             throw new Exception("Expected more inputs than were provided");
@@ -63,27 +68,27 @@
         register = inputs.Current;
     }
 
-    private void HandleAddInstruction(ref int register, int otherRegister)
+    private static void HandleAddInstruction(ref long register, long otherRegister)
     {
         register = register + otherRegister;
     }
 
-    private void HandleMultiplyInstruction(ref int register, int otherRegister)
+    private static void HandleMultiplyInstruction(ref long register, long otherRegister)
     {
         register = register * otherRegister;
     }
 
-    private void HandleDivideInstruction(ref int register, int otherRegister)
+    private static void HandleDivideInstruction(ref long register, long otherRegister)
     {
         register = register / otherRegister;
     }
 
-    private void HandleModuloInstruction(ref int register, int otherRegister)
+    private static void HandleModuloInstruction(ref long register, long otherRegister)
     {
         register = register % otherRegister;
     }
 
-    private void HandleEqualizeInstruction(ref int register, int otherRegister)
+    private static void HandleEqualizeInstruction(ref long register, long otherRegister)
     {
         register = register == otherRegister ? 1 : 0;
     }
