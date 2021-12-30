@@ -57,6 +57,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day22_ReactorReboot", "Day2
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day23_AmphipodChessMoves", "Day23_AmphipodChessMoves\Day23_AmphipodChessMoves.csproj", "{350573F6-6380-46B5-A314-BDEB6D537A75}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Day24_ALU_Serial", "Day24_ALU_Serial\Day24_ALU_Serial.csproj", "{A98D3177-44BF-498C-A8F3-9666A140937B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -171,6 +173,10 @@ Global
 		{350573F6-6380-46B5-A314-BDEB6D537A75}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{350573F6-6380-46B5-A314-BDEB6D537A75}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{350573F6-6380-46B5-A314-BDEB6D537A75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A98D3177-44BF-498C-A8F3-9666A140937B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A98D3177-44BF-498C-A8F3-9666A140937B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A98D3177-44BF-498C-A8F3-9666A140937B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A98D3177-44BF-498C-A8F3-9666A140937B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
