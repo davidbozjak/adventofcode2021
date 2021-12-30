@@ -3,24 +3,13 @@
 
 var fullSerialNumberValidator = new ALU(programLines);
 
-var digitValidators = new List<ALU>();
-int indexOfLastInputCommand = 0;
+var digitValidators = SplitInstructionIntoSubComputers(programLines);
 
-for (int i = 1; i <= programLines.Count; i++)
-{
-    if (i == programLines.Count || programLines[i].Type == InstructionType.Input)
-    {
-        digitValidators.Add(new ALU(programLines.Skip(indexOfLastInputCommand).Take(i - indexOfLastInputCommand)));
-        indexOfLastInputCommand = i;
-    }
-}
-
-if (digitValidators.Count != 14) throw new Exception("Domain knowledge, serial number is 14 digits long");
-
-// use memoization to prune dead branches and speed up computation
+// use memoization to prune dead branches.
+// Fun fact, since part 1 and part 2 are working on the same search space it doesn't have to be cleared between runs, furhter speeding up part 2 (Unfortunately part2 was already way faster)
 HashSet<(int digit, long previousOutput)> deadBranchLog = new();
 
-var maxNumber = SearchForMaxResult(0, 0, 0);
+var maxNumber = Search(0, 0, 0, 9, 0, w => w - 1);
 
 if (maxNumber == null) throw new Exception();
 
@@ -31,9 +20,7 @@ if (outputPart1 != 0) throw new Exception();
 
 Console.WriteLine($"Part 1: {maxNumber}");
 
-deadBranchLog = new();
-
-var minNumber = SearchForMinResult(0, 0, 0);
+var minNumber = Search(0, 0, 0, 1, 10, w => w + 1);
 
 if (minNumber == null) throw new Exception();
 
@@ -44,7 +31,7 @@ if (outputPart2 != 0) throw new Exception();
 
 Console.WriteLine($"Part 2: {minNumber}");
 
-long? SearchForMaxResult(int digit, long previousOutput, long currentNumber)
+long? Search(int digit, long previousOutput, long currentNumber, int inputStartValue, int inputEndValue, Func<int, int> inputIteratorFunc)
 {
     if (deadBranchLog.Contains((digit, previousOutput)))
         return null;
@@ -58,11 +45,11 @@ long? SearchForMaxResult(int digit, long previousOutput, long currentNumber)
 
     var validator = digitValidators[digit];
 
-    for (int input = 9; input > 0; input--)
+    for (int input = inputStartValue; input != inputEndValue; input = inputIteratorFunc(input))
     {
         (_, _, _, long output) = validator.RunProgramForInput(0, 0, 0, previousOutput, new List<long> { input }.GetEnumerator());
         var newNumber = (currentNumber * 10) + input;
-        var result = SearchForMaxResult(digit + 1, output, newNumber);
+        var result = Search(digit + 1, output, newNumber, inputStartValue, inputEndValue, inputIteratorFunc);
 
         if (result != null)
             return result;
@@ -73,33 +60,23 @@ long? SearchForMaxResult(int digit, long previousOutput, long currentNumber)
     return null;
 }
 
-long? SearchForMinResult(int digit, long previousOutput, long currentNumber)
+static ALU[] SplitInstructionIntoSubComputers(IReadOnlyList<Instruction> programLines)
 {
-    if (deadBranchLog.Contains((digit, previousOutput)))
-        return null;
+    var computers = new List<ALU>();
+    int indexOfLastInputCommand = 0;
 
-    if (digit == 14)
+    for (int i = 1; i <= programLines.Count; i++)
     {
-        if (previousOutput == 0)
-            return currentNumber;
-        else return null;
+        if (i == programLines.Count || programLines[i].Type == InstructionType.Input)
+        {
+            computers.Add(new ALU(programLines.Skip(indexOfLastInputCommand).Take(i - indexOfLastInputCommand)));
+            indexOfLastInputCommand = i;
+        }
     }
 
-    var validator = digitValidators[digit];
+    if (computers.Count != 14) throw new Exception("Domain knowledge, serial number is 14 digits long");
 
-    for (int input = 1; input <= 9; input++)
-    {
-        (_, _, _, long output) = validator.RunProgramForInput(0, 0, 0, previousOutput, new List<long> { input }.GetEnumerator());
-        var newNumber = (currentNumber * 10) + input;
-        var result = SearchForMinResult(digit + 1, output, newNumber);
-
-        if (result != null)
-            return result;
-    }
-
-    deadBranchLog.Add((digit, previousOutput));
-
-    return null;
+    return computers.ToArray();
 }
 
 static bool GetInstruction(string? input, out Instruction? value)

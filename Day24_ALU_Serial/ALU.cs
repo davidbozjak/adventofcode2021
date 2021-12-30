@@ -11,11 +11,8 @@
     {
         long[] registers = new[] { initialW, initialX, initialY, initialZ };
 
-        Instruction? prevInstruction;
-        int stepCounter = 0;
         foreach (var instruction in instructions)
         {
-            stepCounter++;
             long register1Id = instruction.Register1 - 'w';
             long register2 = -1;
             var register2explicitValue = false;
@@ -53,8 +50,6 @@
                 default:
                     throw new Exception();
             }
-
-            prevInstruction = instruction;
         }
 
         return (registers[0], registers[1], registers[2], registers[3]);
